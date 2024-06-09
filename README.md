@@ -31,46 +31,11 @@ export default {
 
 ```
 calculator_front
-├─ .env
 ├─ .eslintrc.cjs
 ├─ .firebase
 │  ├─ hosting.ZGlzdA.cache
 │  └─ hosting.cHVibGlj.cache
 ├─ .firebaserc
-├─ .gitignore
-├─ .nvmrc
-├─ .prettierrc
-├─ README.md
-├─ firebase.json
-├─ index.html
-├─ package-lock.json
-├─ package.json
-├─ public
-│  ├─ index.html
-│  └─ vite.svg
-├─ src
-│  ├─ App.css
-│  ├─ App.tsx
-│  ├─ assets
-│  │  └─ react.svg
-│  ├─ firebase.ts
-│  ├─ index.css
-│  ├─ main.tsx
-│  └─ vite-env.d.ts
-├─ tsconfig.json
-├─ tsconfig.node.json
-└─ vite.config.ts
-
-```
-```
-calculator_front
-├─ .env
-├─ .eslintrc.cjs
-├─ .firebase
-│  ├─ hosting.ZGlzdA.cache
-│  └─ hosting.cHVibGlj.cache
-├─ .firebaserc
-├─ .gitignore
 ├─ .nvmrc
 ├─ .prettierrc
 ├─ README.md

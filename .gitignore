@@ -22,6 +22,7 @@ build
 # dotenv environment variables file
 .env
 
+.git
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
