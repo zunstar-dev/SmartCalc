@@ -14,12 +14,12 @@ const App: React.FC = () => {
     <div>
       <AppBar position="static">
         <Toolbar>
-          <Typography variant="h6">My MUI Project</Typography>
+          <Typography variant="h6">안녕안녕</Typography>
         </Toolbar>
       </AppBar>
       <Container>
         <Typography variant="h4" component="h1" gutterBottom>
-          Welcome to My MUI Project
+          안녕하세요
         </Typography>
         <Button variant="contained" color="primary">
           Hello World
