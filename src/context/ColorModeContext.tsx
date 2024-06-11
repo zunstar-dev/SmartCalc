@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, useMediaQuery } from '@mui/material';
+import { CssBaseline } from '@mui/material';
 
 interface ColorModeContextType {
   toggleColorMode: () => void;
