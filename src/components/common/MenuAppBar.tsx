@@ -22,7 +22,7 @@ const MenuAppBar: FC = () => {
             <MenuIcon />
           </IconButton>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            Photos
+            연봉 비서
           </Typography>
           <CustomizedSwitches />
         </Toolbar>
