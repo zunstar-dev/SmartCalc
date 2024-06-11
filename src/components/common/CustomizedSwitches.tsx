@@ -3,8 +3,7 @@ import { styled } from '@mui/material/styles';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { ColorModeContext } from '../../context/ColorModeContext';
-
+import { LayoutModeContext } from '../../context/LayoutModeContext';
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
   height: 34,
@@ -28,7 +27,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
     },
   },
   '& .MuiSwitch-thumb': {
-    backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#001e3c',
+    backgroundColor: theme.palette.mode === 'dark' ? '#003892' : '#FF6D00',
     width: 32,
     height: 32,
     '&::before': {
@@ -53,7 +52,7 @@ const MaterialUISwitch = styled(Switch)(({ theme }) => ({
 }));
 
 const CustomizedSwitches: FC = () => {
-  const { mode, toggleColorMode } = useContext(ColorModeContext);
+  const { mode, toggleColorMode } = useContext(LayoutModeContext);
 
   return (
     <FormGroup>

@@ -1,15 +1,26 @@
-import * as React from 'react';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
+import {
+  createContext,
+  FC,
+  PropsWithChildren,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
-interface ColorModeContextType {
+interface LayoutModeContextType {
   toggleColorMode: () => void;
+  toggleDrawer: (newOpen: boolean) => void;
   mode: 'light' | 'dark';
+  open: boolean;
 }
 
-export const ColorModeContext = React.createContext<ColorModeContextType>({
+export const LayoutModeContext = createContext<LayoutModeContextType>({
   toggleColorMode: () => {},
+  toggleDrawer: () => {},
   mode: 'light',
+  open: false,
 });
 
 const getInitialMode = () => {
@@ -23,33 +34,36 @@ const getInitialMode = () => {
   return prefersDarkMode ? 'dark' : 'light';
 };
 
-export const ColorModeProvider: React.FC<React.PropsWithChildren<{}>> = ({
-  children,
-}) => {
-  const [mode, setMode] = React.useState<'light' | 'dark'>(getInitialMode);
+export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
+  const [mode, setMode] = useState<'light' | 'dark'>(getInitialMode);
+  const [open, setOpen] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     localStorage.setItem('themeMode', mode);
   }, [mode]);
 
-  const colorMode = React.useMemo(
+  const Layout = useMemo(
     () => ({
       toggleColorMode: () => {
         setMode((prevMode) => (prevMode === 'light' ? 'dark' : 'light'));
       },
+      toggleDrawer: (newOpen: boolean) => {
+        setOpen(newOpen);
+      },
       mode,
+      open,
     }),
-    [mode]
+    [mode, open]
   );
 
-  const theme = React.useMemo(
+  const theme = useMemo(
     () =>
       createTheme({
         palette: {
           mode,
           primary: {
-            light: '#FF8A50',
-            main: '#FF6D00',
+            light: '#ebbd36',
+            main: '#ebbd36',
             dark: '#BF360C',
             contrastText: '#FFFFFF',
           },
@@ -73,11 +87,11 @@ export const ColorModeProvider: React.FC<React.PropsWithChildren<{}>> = ({
   );
 
   return (
-    <ColorModeContext.Provider value={colorMode}>
+    <LayoutModeContext.Provider value={Layout}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {children}
       </ThemeProvider>
-    </ColorModeContext.Provider>
+    </LayoutModeContext.Provider>
   );
 };
