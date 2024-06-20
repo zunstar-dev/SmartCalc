@@ -8,7 +8,6 @@ import Salary from './pages/Salary';
 import SalaryCalculator from './pages/SalaryCalculator';
 import SalaryGrowth from './pages/SalaryGrowth';
 import Notifications from './components/common/Notifications';
-import FirebaseNotificationManager from './firebase/FirebaseNotificationManager';
 import AppProviders from './AppProviders';
 
 const App: FC = () => {
