@@ -1,0 +1,21 @@
+{
+  "name": "나의 연봉 계산기",
+  "short_name": "연봉 계산기",
+  "description": "나의 연봉 계산기를 통해 연봉 계산을 손쉽게 수행하세요.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#303030",
+  "theme_color": "#ebbd36",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}

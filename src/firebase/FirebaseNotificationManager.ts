@@ -1,8 +1,8 @@
 // src/components/common/FirebaseNotificationManager.tsx
 import { FC, useEffect } from 'react';
 import { getToken, onMessage } from 'firebase/messaging';
-import { useNotification } from '../context/NotificationContext';
 import { messaging } from './Firebase';
+import { useNotification } from '../context/NotificationContext';
 
 const FirebaseNotificationManager: FC = () => {
   const { addNotification } = useNotification();
@@ -26,9 +26,19 @@ const FirebaseNotificationManager: FC = () => {
       if (permission === 'granted') {
         getToken(messaging, {
           vapidKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-        }).catch((err: any) => {
-          console.error('An error occurred while retrieving token. ', err);
-        });
+        })
+          .then((currentToken) => {
+            if (currentToken) {
+              console.log('Current token:', currentToken);
+            } else {
+              console.log(
+                'No registration token available. Request permission to generate one.'
+              );
+            }
+          })
+          .catch((err: any) => {
+            console.error('An error occurred while retrieving token. ', err);
+          });
       }
     });
 

@@ -1,4 +1,27 @@
-// public/firebase-messaging-sw.js
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open('static-cache-v1').then((cache) => {
+      return cache.addAll([
+        '/',
+        '/index.html',
+        '/favicon.ico',
+        '/manifest.json',
+        '/src/main.tsx',
+        // 필요한 다른 파일들 추가
+      ]);
+    })
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.match(event.request).then((response) => {
+      return response || fetch(event.request);
+    })
+  );
+});
+
 importScripts(
   'https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js'
 );
@@ -25,8 +48,8 @@ messaging.onBackgroundMessage((payload) => {
   const notificationTitle = payload.notification.title;
   const notificationOptions = {
     body: payload.notification.body,
-    icon: payload.notification.image, // 이미지 추가
-    data: { url: payload.fcmOptions.link }, // 링크 추가
+    icon: payload.notification.image,
+    data: { url: payload.fcmOptions.link },
   };
 
   self.registration.showNotification(notificationTitle, notificationOptions);
@@ -34,7 +57,7 @@ messaging.onBackgroundMessage((payload) => {
 
 self.addEventListener('notificationclick', function (event) {
   const url = event.notification.data.url;
-  event.notification.close(); // 알림을 닫습니다
+  event.notification.close();
   event.waitUntil(
     clients.matchAll({ type: 'window' }).then((windowClients) => {
       for (let i = 0; i < windowClients.length; i++) {

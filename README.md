@@ -15,10 +15,15 @@ calculator_front
 ├─ public
 │  ├─ favicon.ico
 │  ├─ firebase-messaging-sw.js
-│  └─ images
-│     └─ smartcalc-og-image.webp
+│  ├─ icons
+│  │  ├─ icon-192x192.png
+│  │  └─ icon-512x512.png
+│  ├─ images
+│  │  └─ smartcalc-og-image.webp
+│  └─ manifest.json
 ├─ src
 │  ├─ App.tsx
+│  ├─ AppProviders.tsx
 │  ├─ assets
 │  │  └─ react.svg
 │  ├─ components
@@ -27,13 +32,14 @@ calculator_front
 │  │  ├─ General
 │  │  └─ common
 │  │     ├─ CustomizedSwitches.tsx
-│  │     ├─ FirebaseNotificationManager.tsx
 │  │     ├─ MenuAppBar.tsx
 │  │     ├─ Notifications.tsx
 │  │     └─ TemporaryDrawer.tsx
 │  ├─ context
 │  │  └─ NotificationContext.tsx
-│  ├─ firebase.ts
+│  ├─ firebase
+│  │  ├─ Firebase.ts
+│  │  └─ FirebaseNotificationManager.ts
 │  ├─ main.tsx
 │  ├─ pages
 │  │  ├─ Salary.tsx
