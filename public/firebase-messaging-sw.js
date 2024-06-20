@@ -1,3 +1,6 @@
+// public/firebase-messaging-sw.js
+
+// 서비스 워커 설치 시 특정 파일을 캐시에 저장
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open('static-cache-v1').then((cache) => {
@@ -6,7 +9,6 @@ self.addEventListener('install', (event) => {
         '/index.html',
         '/favicon.ico',
         '/manifest.json',
-        '/src/main.tsx',
         // 필요한 다른 파일들 추가
       ]);
     })
@@ -14,6 +16,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
+// 네트워크 요청이 있을 때 캐시된 파일 제공
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request).then((response) => {
@@ -22,6 +25,7 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Firebase 메시징 설정
 importScripts(
   'https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js'
 );

@@ -1,8 +1,8 @@
 // src/components/common/FirebaseNotificationManager.tsx
 import { FC, useEffect } from 'react';
 import { getToken, onMessage } from 'firebase/messaging';
-import { messaging } from './Firebase';
 import { useNotification } from '../context/NotificationContext';
+import { messaging } from './Firebase';
 
 const FirebaseNotificationManager: FC = () => {
   const { addNotification } = useNotification();
@@ -16,31 +16,34 @@ const FirebaseNotificationManager: FC = () => {
             'Service Worker registered with scope:',
             registration.scope
           );
+          Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+              getToken(messaging, {
+                vapidKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+                serviceWorkerRegistration: registration,
+              })
+                .then((currentToken) => {
+                  if (currentToken) {
+                    console.log('Current token:', currentToken);
+                  } else {
+                    console.log(
+                      'No registration token available. Request permission to generate one.'
+                    );
+                  }
+                })
+                .catch((err: any) => {
+                  console.error(
+                    'An error occurred while retrieving token. ',
+                    err
+                  );
+                });
+            }
+          });
         })
         .catch((error) => {
           console.log('Service Worker registration failed:', error);
         });
     }
-
-    Notification.requestPermission().then((permission) => {
-      if (permission === 'granted') {
-        getToken(messaging, {
-          vapidKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-        })
-          .then((currentToken) => {
-            if (currentToken) {
-              console.log('Current token:', currentToken);
-            } else {
-              console.log(
-                'No registration token available. Request permission to generate one.'
-              );
-            }
-          })
-          .catch((err: any) => {
-            console.error('An error occurred while retrieving token. ', err);
-          });
-      }
-    });
 
     const unsubscribe = onMessage(messaging, (payload) => {
       console.log('Message received. ', payload);
