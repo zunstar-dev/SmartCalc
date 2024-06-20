@@ -1,6 +1,7 @@
 // src/firebase.ts
 import { initializeApp } from 'firebase/app';
 import { getMessaging } from 'firebase/messaging';
+import { getAnalytics, isSupported } from 'firebase/analytics';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -15,4 +16,11 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
-export { app, messaging };
+let analytics;
+isSupported().then((supported) => {
+  if (supported) {
+    analytics = getAnalytics(app);
+  }
+});
+
+export { app, messaging, analytics };

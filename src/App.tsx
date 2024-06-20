@@ -8,6 +8,7 @@ import Salary from './pages/Salary';
 import SalaryCalculator from './pages/SalaryCalculator';
 import SalaryGrowth from './pages/SalaryGrowth';
 import Notifications from './components/common/Notifications';
+import FirebaseNotificationManager from './firebase/FirebaseNotificationManager';
 import AppProviders from './AppProviders';
 
 const App: FC = () => {
@@ -16,7 +17,7 @@ const App: FC = () => {
       <Router>
         <MenuAppBar />
         <TemporaryDrawer />
-        {/* <FirebaseNotificationManager /> */}
+        <FirebaseNotificationManager />
         <Box
           sx={{
             padding: 2, // 원하는 패딩 값 설정
