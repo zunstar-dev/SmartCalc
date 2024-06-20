@@ -14,6 +14,7 @@ calculator_front
 ├─ package.json
 ├─ public
 │  ├─ favicon.ico
+│  ├─ firebase-messaging-sw.js
 │  └─ images
 │     └─ smartcalc-og-image.webp
 ├─ src
@@ -26,15 +27,25 @@ calculator_front
 │  │  ├─ General
 │  │  └─ common
 │  │     ├─ CustomizedSwitches.tsx
+│  │     ├─ FirebaseNotificationManager.tsx
 │  │     ├─ MenuAppBar.tsx
+│  │     ├─ Notifications.tsx
 │  │     └─ TemporaryDrawer.tsx
 │  ├─ context
+│  │  └─ NotificationContext.tsx
 │  ├─ firebase.ts
 │  ├─ main.tsx
 │  ├─ pages
+│  │  ├─ Salary.tsx
+│  │  ├─ SalaryCalculator.tsx
+│  │  └─ SalaryGrowth.tsx
 │  ├─ styles
 │  │  ├─ App.css
 │  │  └─ index.css
+│  ├─ types
+│  │  ├─ contexts
+│  │  │  └─ NotificationMode.d.ts
+│  │  └─ menu.d.ts
 │  └─ vite-env.d.ts
 ├─ tsconfig.json
 ├─ tsconfig.node.json

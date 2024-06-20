@@ -4,12 +4,12 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import CustomizedSwitches from './CustomizedSwitches';
-import { LayoutModeContext } from '../../context/LayoutModeContext';
+import { useLayout } from '../../context/LayoutModeContext';
 
 const MenuAppBar: FC = () => {
-  const { toggleDrawer } = useContext(LayoutModeContext);
+  const { toggleDrawer } = useLayout();
 
   const handleDrawerOpen = () => {
     toggleDrawer(true);

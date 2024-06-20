@@ -1,9 +1,9 @@
-import { FC, useContext } from 'react';
+import { FC } from 'react';
 import { styled } from '@mui/material/styles';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import { LayoutModeContext } from '../../context/LayoutModeContext';
+import { useLayout } from '../../context/LayoutModeContext';
 
 const MaterialUISwitch = styled(Switch)(({ theme }) => ({
   width: 62,
@@ -57,7 +57,7 @@ const CustomFormControlLabel = styled(FormControlLabel)({
 });
 
 const CustomizedSwitches: FC = () => {
-  const { mode, toggleColorMode } = useContext(LayoutModeContext);
+  const { mode, toggleColorMode } = useLayout();
 
   return (
     <FormGroup>

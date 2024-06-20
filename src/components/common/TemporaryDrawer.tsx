@@ -5,10 +5,10 @@ import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemText from '@mui/material/ListItemText';
-import { FC, useContext } from 'react';
-import { LayoutModeContext } from '../../context/LayoutModeContext';
+import { FC } from 'react';
 import { MenuItem } from '../../types/menu';
 import { Link } from 'react-router-dom';
+import { useLayout } from '../../context/LayoutModeContext';
 
 const menuListTop: MenuItem[] = [
   {
@@ -26,7 +26,7 @@ const menuListTop: MenuItem[] = [
 ];
 
 const TemporaryDrawer: FC = () => {
-  const { open, toggleDrawer } = useContext(LayoutModeContext);
+  const { open, toggleDrawer } = useLayout();
 
   const handleDrawer = () => {
     toggleDrawer(!open);

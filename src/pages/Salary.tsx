@@ -8,8 +8,9 @@ const SalaryForm: FC = () => {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   const handleSalaryChange = (index: number, value: string) => {
+    const formattedValue = value.replace(/\D/g, ''); // Remove non-numeric characters
     const newSalaries = [...salaries];
-    newSalaries[index] = value;
+    newSalaries[index] = formattedValue;
     setSalaries(newSalaries);
   };
 
@@ -44,19 +45,17 @@ const SalaryForm: FC = () => {
         display: 'flex',
         flexDirection: 'column',
         gap: 2,
-        maxWidth: 400,
         margin: 'auto',
-        mt: 5,
       }}
     >
       {salaries.map((salary, index) => (
         <TextField
           key={index}
           label={`내 연봉 ${index + 1}`}
-          value={salary}
+          value={salary ? Number(salary).toLocaleString('ko-KR') : ''}
           onChange={(e) => handleSalaryChange(index, e.target.value)}
           fullWidth
-          type="number"
+          type="text"
         />
       ))}
       <Button type="submit" variant="contained" color="primary">

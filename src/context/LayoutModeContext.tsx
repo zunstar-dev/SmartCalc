@@ -4,6 +4,7 @@ import {
   createContext,
   FC,
   PropsWithChildren,
+  useContext,
   useEffect,
   useMemo,
   useState,
@@ -88,4 +89,12 @@ export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       </ThemeProvider>
     </LayoutModeContext.Provider>
   );
+};
+
+export const useLayout = (): LayoutModeContextType => {
+  const context = useContext(LayoutModeContext);
+  if (!context) {
+    throw new Error('useLayout must be used within a LayoutModeContext');
+  }
+  return context;
 };

@@ -1,3 +1,4 @@
+// src/types/layoutMode.d.ts
 export interface LayoutModeContextType {
   toggleColorMode: () => void;
   toggleDrawer: (newOpen: boolean) => void;
