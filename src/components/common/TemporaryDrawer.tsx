@@ -4,12 +4,26 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
-import MailIcon from '@mui/icons-material/Mail';
 import { FC, useContext } from 'react';
 import { LayoutModeContext } from '../../context/LayoutModeContext';
+import { MenuItem } from '../../types/menu';
+import { Link } from 'react-router-dom';
+
+const menuListTop: MenuItem[] = [
+  {
+    text: '내 연봉 등록',
+    path: '/',
+  },
+  {
+    text: '2024 실수령액',
+    path: '/salary-calculator',
+  },
+  {
+    text: '연봉 상승률',
+    path: '/salary-growth',
+  },
+];
 
 const TemporaryDrawer: FC = () => {
   const { open, toggleDrawer } = useContext(LayoutModeContext);
@@ -18,42 +32,25 @@ const TemporaryDrawer: FC = () => {
     toggleDrawer(!open);
   };
 
-  const DrawerList = (
-    <Box sx={{ width: 250 }} role="presentation">
-      <List>
-        {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-      <Divider />
-      <List>
-        {['All mail', 'Trash', 'Spam'].map((text, index) => (
-          <ListItem key={text} disablePadding>
-            <ListItemButton>
-              <ListItemIcon>
-                {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-              </ListItemIcon>
-              <ListItemText primary={text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
-    </Box>
-  );
-
   return (
-    <div>
-      <Drawer open={open} onClose={handleDrawer}>
-        {DrawerList}
-      </Drawer>
-    </div>
+    <Drawer open={open} onClose={handleDrawer}>
+      <Box sx={{ width: 250 }} role="presentation">
+        <List>
+          {menuListTop.map((data, index) => (
+            <ListItem key={index} disablePadding>
+              <ListItemButton
+                component={Link}
+                to={data.path}
+                onClick={handleDrawer}
+              >
+                <ListItemText primary={data.text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+      </Box>
+    </Drawer>
   );
 };
 

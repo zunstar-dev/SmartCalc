@@ -8,13 +8,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-
-interface LayoutModeContextType {
-  toggleColorMode: () => void;
-  toggleDrawer: (newOpen: boolean) => void;
-  mode: 'light' | 'dark';
-  open: boolean;
-}
+import { LayoutModeContextType } from '../types/contexts/LayoutMode';
 
 export const LayoutModeContext = createContext<LayoutModeContextType>({
   toggleColorMode: () => {},
@@ -63,14 +57,14 @@ export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
           mode,
           primary: {
             light: '#ebbd36',
-            main: '#ebbd36',
-            dark: '#BF360C',
+            main: mode === 'dark' ? '#737373' : '#ebbd36',
+            dark: '#737373',
             contrastText: '#FFFFFF',
           },
           secondary: {
-            light: '#FFD740',
-            main: '#FFC107',
-            dark: '#FF8F00',
+            light: '#ff9200',
+            main: mode === 'dark' ? '#9a9999' : '#ff9200',
+            dark: '#9a9999',
             contrastText: '#000000',
           },
           background: {

@@ -17,13 +17,24 @@ calculator_front
 │  └─ images
 │     └─ smartcalc-og-image.webp
 ├─ src
-│  ├─ App.css
 │  ├─ App.tsx
 │  ├─ assets
 │  │  └─ react.svg
+│  ├─ components
+│  │  ├─ Assets
+│  │  ├─ Fitness
+│  │  ├─ General
+│  │  └─ common
+│  │     ├─ CustomizedSwitches.tsx
+│  │     ├─ MenuAppBar.tsx
+│  │     └─ TemporaryDrawer.tsx
+│  ├─ context
 │  ├─ firebase.ts
-│  ├─ index.css
 │  ├─ main.tsx
+│  ├─ pages
+│  ├─ styles
+│  │  ├─ App.css
+│  │  └─ index.css
 │  └─ vite-env.d.ts
 ├─ tsconfig.json
 ├─ tsconfig.node.json
