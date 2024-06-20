@@ -17,7 +17,7 @@ const App: FC = () => {
       <Router>
         <MenuAppBar />
         <TemporaryDrawer />
-        <FirebaseNotificationManager />
+        {/* <FirebaseNotificationManager /> */}
         <Box
           sx={{
             padding: 2, // 원하는 패딩 값 설정
