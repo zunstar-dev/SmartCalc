@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { useAuth } from './AuthContext';
 import { loadSalaries } from '../firebase/Firebase';
-import { SalaryContextProps } from '../types/contexts/SalaryMode';
+import { SalaryContextProps } from '../types/contexts/Salary';
 
 const SalaryContext = createContext<SalaryContextProps | undefined>(undefined);
 

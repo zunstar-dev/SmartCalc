@@ -1,5 +1,5 @@
 import React, { FC, useState, useEffect } from 'react';
-import { Box, Button, TextField, Fab, Tooltip, Skeleton } from '@mui/material';
+import { Box, Button, TextField, Fab, Tooltip } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Helmet } from 'react-helmet-async';
 import { useSalary } from '../context/SalaryContext';
@@ -90,43 +90,19 @@ const Salary: FC = () => {
             type="text"
           />
         </Box>
-        {localSalaries.length > 0 ? (
-          localSalaries.map((salary, index) => (
-            <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-              <TextField
-                label={`내 연봉 ${index + 1}`}
-                value={salary ? Number(salary).toLocaleString('ko-KR') : ''}
-                onChange={(e) => handleSalaryChange(index, e.target.value)}
-                fullWidth
-                type="text"
-                sx={{ marginRight: 1 }}
-              />
-              <DeleteButton onClick={() => handleDelete(index)} />
-            </Box>
-          ))
-        ) : (
-          <>
-            {[...Array(3)].map((_, index) => (
-              <Box
-                key={index}
-                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
-              >
-                <Skeleton
-                  variant="rectangular"
-                  width="100%"
-                  height={56}
-                  animation="wave"
-                />
-                <Skeleton
-                  variant="circular"
-                  width={40}
-                  height={40}
-                  animation="wave"
-                />
-              </Box>
-            ))}
-          </>
-        )}
+        {localSalaries.map((salary, index) => (
+          <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+            <TextField
+              label={`내 연봉 ${index + 1}`}
+              value={salary ? Number(salary).toLocaleString('ko-KR') : ''}
+              onChange={(e) => handleSalaryChange(index, e.target.value)}
+              fullWidth
+              type="text"
+              sx={{ marginRight: 1 }}
+            />
+            <DeleteButton onClick={() => handleDelete(index)} />
+          </Box>
+        ))}
         <Button type="submit" variant="contained" color="primary">
           등록
         </Button>

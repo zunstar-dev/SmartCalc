@@ -1,5 +1,5 @@
 import { FC, PropsWithChildren } from 'react';
-import { LayoutModeProvider } from './context/LayoutModeContext';
+import { LayoutModeProvider } from './context/LayoutContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from './context/AuthContext';

@@ -10,7 +10,7 @@ import {
 import {
   NotificationContextType,
   Notification,
-} from '../types/contexts/NotificationMode';
+} from '../types/contexts/Notification';
 
 const NotificationContext = createContext<NotificationContextType | undefined>(
   undefined

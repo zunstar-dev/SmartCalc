@@ -9,13 +9,15 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { LayoutModeContextType } from '../types/contexts/LayoutMode';
+import { LayoutContextType } from '../types/contexts/Layout';
 
-export const LayoutModeContext = createContext<LayoutModeContextType>({
+export const LayoutContext = createContext<LayoutContextType>({
   toggleColorMode: () => {},
   toggleDrawer: () => {},
+  setLoading: () => {},
   mode: 'light',
   open: false,
+  loading: true,
 });
 
 const getInitialMode = () => {
@@ -31,7 +33,8 @@ const getInitialMode = () => {
 
 export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [mode, setMode] = useState<'light' | 'dark'>(getInitialMode);
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     localStorage.setItem('themeMode', mode);
@@ -45,10 +48,14 @@ export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       toggleDrawer: (newOpen: boolean) => {
         setOpen(newOpen);
       },
+      setLoading: (loading: boolean) => {
+        setLoading(loading);
+      },
       mode,
       open,
+      loading,
     }),
-    [mode, open]
+    [mode, open, loading]
   );
 
   const theme = useMemo(
@@ -82,17 +89,17 @@ export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   );
 
   return (
-    <LayoutModeContext.Provider value={Layout}>
+    <LayoutContext.Provider value={Layout}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         {children}
       </ThemeProvider>
-    </LayoutModeContext.Provider>
+    </LayoutContext.Provider>
   );
 };
 
-export const useLayout = (): LayoutModeContextType => {
-  const context = useContext(LayoutModeContext);
+export const useLayout = (): LayoutContextType => {
+  const context = useContext(LayoutContext);
   if (!context) {
     throw new Error('useLayout must be used within a LayoutModeContext');
   }

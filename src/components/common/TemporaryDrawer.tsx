@@ -8,7 +8,7 @@ import ListItemText from '@mui/material/ListItemText';
 import { FC } from 'react';
 import { MenuItem } from '../../types/menu';
 import { Link } from 'react-router-dom';
-import { useLayout } from '../../context/LayoutModeContext';
+import { useLayout } from '../../context/LayoutContext';
 
 const menuListTop: MenuItem[] = [
   {

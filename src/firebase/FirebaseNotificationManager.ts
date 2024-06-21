@@ -1,6 +1,6 @@
 import { getToken, onMessage } from 'firebase/messaging';
 import { messaging } from './Firebase';
-import { NotificationContextType } from '../types/contexts/NotificationMode';
+import { NotificationContextType } from '../types/contexts/Notification';
 
 const setupFirebaseMessaging = (
   addNotification: NotificationContextType['addNotification']

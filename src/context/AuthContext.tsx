@@ -7,7 +7,7 @@ import {
   PropsWithChildren,
 } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { AuthContextProps } from '../types/contexts/AuthMode';
+import { AuthContextProps } from '../types/contexts/Auth';
 import { auth, signInUser } from '../firebase/Firebase';
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);

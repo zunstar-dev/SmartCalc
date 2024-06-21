@@ -6,7 +6,7 @@ import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import { FC } from 'react';
 import CustomizedSwitches from './CustomizedSwitches';
-import { useLayout } from '../../context/LayoutModeContext';
+import { useLayout } from '../../context/LayoutContext';
 
 const MenuAppBar: FC = () => {
   const { toggleDrawer } = useLayout();
