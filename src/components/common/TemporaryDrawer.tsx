@@ -16,7 +16,7 @@ const menuListTop: MenuItem[] = [
     path: '/',
   },
   {
-    text: '2024 실수령액',
+    text: '연봉 실수령액',
     path: '/salary-calculator',
   },
   {

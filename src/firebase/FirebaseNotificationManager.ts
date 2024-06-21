@@ -1,4 +1,3 @@
-// src/components/common/FirebaseNotificationManager.tsx
 import { FC, useEffect } from 'react';
 import { getToken, onMessage } from 'firebase/messaging';
 import { useNotification } from '../context/NotificationContext';

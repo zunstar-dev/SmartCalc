@@ -20,16 +20,15 @@ calculator_front
 │  │  └─ icon-512x512.png
 │  ├─ images
 │  │  └─ smartcalc-og-image.webp
-│  └─ manifest.json
+│  ├─ manifest.json
+│  ├─ naver9a51be06c3b00a3c8b152328f4abeedc.html
+│  └─ service-worker.js
 ├─ src
 │  ├─ App.tsx
 │  ├─ AppProviders.tsx
 │  ├─ assets
 │  │  └─ react.svg
 │  ├─ components
-│  │  ├─ Assets
-│  │  ├─ Fitness
-│  │  ├─ General
 │  │  └─ common
 │  │     ├─ CustomizedSwitches.tsx
 │  │     ├─ MenuAppBar.tsx
@@ -40,6 +39,7 @@ calculator_front
 │  ├─ firebase
 │  │  ├─ Firebase.ts
 │  │  └─ FirebaseNotificationManager.ts
+│  ├─ globals.d.ts
 │  ├─ main.tsx
 │  ├─ pages
 │  │  ├─ Salary.tsx
