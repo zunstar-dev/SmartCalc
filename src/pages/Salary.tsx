@@ -1,68 +1,58 @@
-import React, { FC, useState, useRef, useEffect } from 'react';
-import {
-  Box,
-  Button,
-  TextField,
-  Fab,
-  Tooltip,
-  IconButton,
-} from '@mui/material';
+import React, { FC, useState, useEffect } from 'react';
+import { Box, Button, TextField, Fab, Tooltip, Skeleton } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { Helmet } from 'react-helmet-async';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth, loadSalaries, saveSalaries } from '../firebase/Firebase';
+import { useSalary } from '../context/SalaryContext';
+import { useAuth } from '../context/AuthContext';
+import { saveSalaries } from '../firebase/Firebase';
+import DeleteButton from '../components/button/DeleteButton';
 
 const Salary: FC = () => {
-  const [salaries, setSalaries] = useState<string[]>(['']);
-  const [userId, setUserId] = useState<string | null>(null);
-  const topRef = useRef<HTMLDivElement>(null);
+  const { user } = useAuth();
+  const { salaries, setSalaries } = useSalary();
+  const [localSalaries, setLocalSalaries] = useState<string[]>([]);
+  const [firstSalary, setFirstSalary] = useState<string>('');
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-        loadSalaries(user.uid).then((loadedSalaries) => {
-          if (loadedSalaries.length === 0) {
-            setSalaries(['']);
-          } else {
-            setSalaries(loadedSalaries);
-          }
-        });
-      }
-    });
+    if (salaries.length > 0) {
+      setLocalSalaries(salaries);
+    }
+  }, [salaries]);
 
-    return () => unsubscribe();
-  }, []);
+  const formatSalary = (value: string) => value.replace(/\D/g, '');
 
   const handleSalaryChange = (index: number, value: string) => {
-    const formattedValue = value.replace(/\D/g, '');
-    const newSalaries = [...salaries];
+    const formattedValue = formatSalary(value);
+    const newSalaries = [...localSalaries];
     newSalaries[index] = formattedValue;
-    setSalaries(newSalaries);
+    setLocalSalaries(newSalaries);
+  };
+
+  const handleFirstSalaryChange = (value: string) => {
+    const formattedValue = formatSalary(value);
+    setFirstSalary(formattedValue);
   };
 
   const handleRefresh = () => {
-    setSalaries(['']);
+    setFirstSalary('');
+    setLocalSalaries(salaries);
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (userId) {
-      await saveSalaries(userId, salaries);
-    }
-    setSalaries(['', ...salaries]);
-    if (topRef.current) {
-      topRef.current.scrollIntoView({ behavior: 'smooth' });
-    }
+    const updatedSalaries = firstSalary
+      ? [firstSalary, ...localSalaries]
+      : localSalaries;
+    setSalaries(updatedSalaries);
+    await saveSalaries(user.uid, updatedSalaries);
+    setFirstSalary('');
   };
 
   const handleDelete = async (index: number) => {
-    const newSalaries = salaries.filter((_, i) => i !== index);
+    const newSalaries = localSalaries.filter((_, i) => i !== index);
+    setLocalSalaries(newSalaries);
     setSalaries(newSalaries);
-    if (userId) {
-      await saveSalaries(userId, newSalaries);
-    }
+    await saveSalaries(user.uid, newSalaries);
   };
 
   return (
@@ -80,7 +70,6 @@ const Salary: FC = () => {
         />
       </Helmet>
       <Box
-        ref={topRef}
         component="form"
         onSubmit={handleSubmit}
         sx={{
@@ -90,20 +79,54 @@ const Salary: FC = () => {
           margin: 'auto',
         }}
       >
-        {salaries.map((salary, index) => (
-          <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
-            <TextField
-              label={`내 연봉 ${index + 1}`}
-              value={salary ? Number(salary).toLocaleString('ko-KR') : ''}
-              onChange={(e) => handleSalaryChange(index, e.target.value)}
-              fullWidth
-              type="text"
-            />
-            <IconButton onClick={() => handleDelete(index)}>
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        ))}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <TextField
+            label="내 연봉"
+            value={
+              firstSalary ? Number(firstSalary).toLocaleString('ko-KR') : ''
+            }
+            onChange={(e) => handleFirstSalaryChange(e.target.value)}
+            fullWidth
+            type="text"
+          />
+        </Box>
+        {localSalaries.length > 0 ? (
+          localSalaries.map((salary, index) => (
+            <Box key={index} sx={{ display: 'flex', alignItems: 'center' }}>
+              <TextField
+                label={`내 연봉 ${index + 1}`}
+                value={salary ? Number(salary).toLocaleString('ko-KR') : ''}
+                onChange={(e) => handleSalaryChange(index, e.target.value)}
+                fullWidth
+                type="text"
+                sx={{ marginRight: 1 }}
+              />
+              <DeleteButton onClick={() => handleDelete(index)} />
+            </Box>
+          ))
+        ) : (
+          <>
+            {[...Array(3)].map((_, index) => (
+              <Box
+                key={index}
+                sx={{ display: 'flex', alignItems: 'center', gap: 1 }}
+              >
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={56}
+                  animation="wave"
+                />
+                <Skeleton
+                  variant="circular"
+                  width={40}
+                  height={40}
+                  animation="wave"
+                />
+              </Box>
+            ))}
+          </>
+        )}
         <Button type="submit" variant="contained" color="primary">
           등록
         </Button>

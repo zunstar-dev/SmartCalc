@@ -1,3 +1,4 @@
+// src/context/SalaryContext.tsx
 import {
   createContext,
   useContext,
@@ -7,37 +8,27 @@ import {
   PropsWithChildren,
 } from 'react';
 import { useAuth } from './AuthContext';
-import { loadSalaries, saveSalaries } from '../firebase/Firebase';
+import { loadSalaries } from '../firebase/Firebase';
 import { SalaryContextProps } from '../types/contexts/SalaryMode';
 
 const SalaryContext = createContext<SalaryContextProps | undefined>(undefined);
 
 export const SalaryProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
-  const { user, loading } = useAuth();
-  const [salaries, setSalaries] = useState<string[]>(['']);
+  const { user } = useAuth();
+  const [salaries, setSalaries] = useState<string[]>([]);
 
   useEffect(() => {
-    if (user && !loading) {
+    if (user) {
       loadSalaries(user.uid).then((loadedSalaries) => {
-        if (loadedSalaries.length === 0) {
-          setSalaries(['']);
-        } else {
+        if (loadedSalaries) {
           setSalaries(loadedSalaries);
         }
       });
     }
-  }, [user, loading]);
-
-  const saveSalariesToFirestore = async () => {
-    if (user) {
-      await saveSalaries(user.uid, salaries);
-    }
-  };
+  }, [user]);
 
   return (
-    <SalaryContext.Provider
-      value={{ salaries, setSalaries, saveSalaries: saveSalariesToFirestore }}
-    >
+    <SalaryContext.Provider value={{ salaries, setSalaries }}>
       {children}
     </SalaryContext.Provider>
   );
