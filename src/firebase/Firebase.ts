@@ -2,6 +2,8 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging } from 'firebase/messaging';
 import { getAnalytics, isSupported } from 'firebase/analytics';
+import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -15,6 +17,8 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 let analytics;
 isSupported().then((supported) => {
@@ -23,4 +27,52 @@ isSupported().then((supported) => {
   }
 });
 
-export { app, messaging, analytics };
+const signInUser = async () => {
+  try {
+    await signInAnonymously(auth);
+  } catch (error) {
+    console.error('Error signing in anonymously:', error);
+  }
+};
+
+const saveSalaries = async (userId: string, salaries: string[]) => {
+  try {
+    await setDoc(doc(db, 'users', userId), { salaries });
+  } catch (error) {
+    console.error('Error saving salaries:', error);
+  }
+};
+
+const loadSalaries = async (userId: string) => {
+  try {
+    const docSnap = await getDoc(doc(db, 'users', userId));
+    if (docSnap.exists()) {
+      return docSnap.data().salaries;
+    } else {
+      console.log('No such document!');
+      return [];
+    }
+  } catch (error) {
+    console.error('Error loading salaries:', error);
+    return [];
+  }
+};
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    console.log('User ID:', user.uid);
+  } else {
+    signInUser();
+  }
+});
+
+export {
+  app,
+  messaging,
+  analytics,
+  auth,
+  db,
+  saveSalaries,
+  loadSalaries,
+  signInUser,
+};

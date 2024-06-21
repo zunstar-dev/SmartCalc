@@ -1,4 +1,4 @@
-import React, { FC, useState, useRef, useEffect } from 'react';
+import React, { FC, useRef } from 'react';
 import {
   Box,
   Button,
@@ -10,30 +10,11 @@ import {
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Helmet } from 'react-helmet-async';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth, loadSalaries, saveSalaries } from '../firebase/Firebase';
+import { useSalary } from '../context/SalaryContext';
 
 const Salary: FC = () => {
-  const [salaries, setSalaries] = useState<string[]>(['']);
-  const [userId, setUserId] = useState<string | null>(null);
+  const { salaries, setSalaries, saveSalaries } = useSalary();
   const topRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-        loadSalaries(user.uid).then((loadedSalaries) => {
-          if (loadedSalaries.length === 0) {
-            setSalaries(['']);
-          } else {
-            setSalaries(loadedSalaries);
-          }
-        });
-      }
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const handleSalaryChange = (index: number, value: string) => {
     const formattedValue = value.replace(/\D/g, '');
@@ -48,9 +29,7 @@ const Salary: FC = () => {
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    if (userId) {
-      await saveSalaries(userId, salaries);
-    }
+    await saveSalaries();
     setSalaries(['', ...salaries]);
     if (topRef.current) {
       topRef.current.scrollIntoView({ behavior: 'smooth' });
@@ -60,9 +39,7 @@ const Salary: FC = () => {
   const handleDelete = async (index: number) => {
     const newSalaries = salaries.filter((_, i) => i !== index);
     setSalaries(newSalaries);
-    if (userId) {
-      await saveSalaries(userId, newSalaries);
-    }
+    await saveSalaries();
   };
 
   return (
