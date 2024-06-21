@@ -10,11 +10,13 @@ import {
 import { useAuth } from './AuthContext';
 import { loadSalaries } from '../firebase/Firebase';
 import { SalaryContextProps } from '../types/contexts/Salary';
+import { useLayout } from './LayoutContext';
 
 const SalaryContext = createContext<SalaryContextProps | undefined>(undefined);
 
 export const SalaryProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const { user } = useAuth();
+  const { setLoading } = useLayout();
   const [salaries, setSalaries] = useState<string[]>([]);
 
   useEffect(() => {
@@ -23,6 +25,7 @@ export const SalaryProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         if (loadedSalaries) {
           setSalaries(loadedSalaries);
         }
+        setLoading(false);
       });
     }
   }, [user]);
