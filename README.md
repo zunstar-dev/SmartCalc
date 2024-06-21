@@ -22,6 +22,7 @@ calculator_front
 │  │  └─ smartcalc-og-image.webp
 │  ├─ manifest.json
 │  ├─ naver9a51be06c3b00a3c8b152328f4abeedc.html
+│  ├─ robots.txt
 │  └─ service-worker.js
 ├─ src
 │  ├─ App.tsx

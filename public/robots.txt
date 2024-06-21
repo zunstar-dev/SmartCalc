@@ -1,0 +1,53 @@
+# 기본 설정
+User-agent: *
+Disallow: /firebase/
+Disallow: /context/
+Disallow: /styles/
+Disallow: /assets/
+Disallow: /src/
+Disallow: /tsconfig.json
+Disallow: /tsconfig.node.json
+Disallow: /vite.config.ts
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /.nvmrc
+Disallow: /.firebaserc
+Disallow: /.eslintrc.cjs
+Disallow: /.prettierrc
+Allow: /
+
+# 네이버 검색봇
+User-agent: Yeti
+Disallow: /firebase/
+Disallow: /context/
+Disallow: /styles/
+Disallow: /assets/
+Disallow: /src/
+Disallow: /tsconfig.json
+Disallow: /tsconfig.node.json
+Disallow: /vite.config.ts
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /.nvmrc
+Disallow: /.firebaserc
+Disallow: /.eslintrc.cjs
+Disallow: /.prettierrc
+Allow: /
+
+# 구글 검색봇
+User-agent: Googlebot
+Disallow: /firebase/
+Disallow: /context/
+Disallow: /styles/
+Disallow: /assets/
+Disallow: /src/
+Disallow: /tsconfig.json
+Disallow: /tsconfig.node.json
+Disallow: /vite.config.ts
+Disallow: /package.json
+Disallow: /package-lock.json
+Disallow: /.nvmrc
+Disallow: /.firebaserc
+Disallow: /.eslintrc.cjs
+Disallow: /.prettierrc
+Allow: /
