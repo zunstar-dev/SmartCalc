@@ -61,12 +61,6 @@ const SalaryGrowth: FC = () => {
                   height={56}
                   animation="wave"
                 />
-                <Skeleton
-                  variant="circular"
-                  width={40}
-                  height={40}
-                  animation="wave"
-                />
               </Box>
             ))}
           </>

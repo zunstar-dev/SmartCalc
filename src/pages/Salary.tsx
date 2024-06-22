@@ -104,7 +104,7 @@ const Salary: FC = () => {
                   animation="wave"
                 />
                 <Skeleton
-                  variant="circular"
+                  variant="rectangular"
                   width={40}
                   height={40}
                   animation="wave"
