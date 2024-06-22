@@ -53,8 +53,6 @@ const Salary: FC = () => {
   const handleDelete = async (index: number) => {
     const newSalaries = localSalaries.filter((_, i) => i !== index);
     setLocalSalaries(newSalaries);
-    setSalaries(newSalaries);
-    await saveSalaries(user.uid, newSalaries);
   };
 
   return (

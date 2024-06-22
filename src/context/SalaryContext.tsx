@@ -16,11 +16,11 @@ const SalaryContext = createContext<SalaryContextProps | undefined>(undefined);
 
 export const SalaryProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const { user } = useAuth();
-  const { setLoading } = useLayout();
+  const { loading, setLoading } = useLayout();
   const [salaries, setSalaries] = useState<string[]>([]);
 
   useEffect(() => {
-    if (user) {
+    if (user && !loading) {
       loadSalaries(user.uid).then((loadedSalaries) => {
         if (loadedSalaries) {
           setSalaries(loadedSalaries);
@@ -28,7 +28,7 @@ export const SalaryProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
         setLoading(false);
       });
     }
-  }, [user]);
+  }, [user, loading, setLoading]);
 
   return (
     <SalaryContext.Provider value={{ salaries, setSalaries }}>

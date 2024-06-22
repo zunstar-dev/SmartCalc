@@ -1,7 +1,8 @@
+// src/firebase/Firebase.ts
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken } from 'firebase/messaging';
 import { getAnalytics, isSupported } from 'firebase/analytics';
-import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -36,7 +37,7 @@ const signInUser = async () => {
 
 const saveSalaries = async (userId: string, salaries: string[]) => {
   try {
-    await setDoc(doc(db, 'users', userId), { salaries });
+    await setDoc(doc(db, 'users', userId), { salaries }, { merge: true });
   } catch (error) {
     console.error('연봉을 저장하는 중 오류 발생:', error);
   }
@@ -46,7 +47,8 @@ const loadSalaries = async (userId: string) => {
   try {
     const docSnap = await getDoc(doc(db, 'users', userId));
     if (docSnap.exists()) {
-      return docSnap.data().salaries;
+      const data = docSnap.data();
+      return data?.salaries || [];
     } else {
       console.log('해당 문서가 존재하지 않습니다!');
       return [];
@@ -65,7 +67,10 @@ const saveToken = async (userId: string, token: string) => {
   }
 };
 
-const requestAndSaveToken = async (userId: string) => {
+const requestAndSaveToken = async (
+  userId: string,
+  setLoading: (loading: boolean) => void
+) => {
   try {
     const currentToken = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
@@ -78,17 +83,10 @@ const requestAndSaveToken = async (userId: string) => {
     }
   } catch (error) {
     console.error('토큰을 요청하는 중 오류 발생:', error);
+  } finally {
+    setLoading(false);
   }
 };
-
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    console.log('사용자 ID:', user.uid);
-    requestAndSaveToken(user.uid);
-  } else {
-    signInUser();
-  }
-});
 
 export {
   app,

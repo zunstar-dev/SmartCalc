@@ -1,18 +1,24 @@
 import { FC } from 'react';
-import { Box, Typography, Skeleton } from '@mui/material';
+import { Box, Typography, Skeleton, Button } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { Helmet } from 'react-helmet-async';
+import { useNavigate } from 'react-router-dom';
 import { useSalary } from '../context/SalaryContext';
 import { useLayout } from '../context/LayoutContext';
 
 const SalaryGrowth: FC = () => {
   const { salaries } = useSalary();
   const { loading } = useLayout();
+  const navigate = useNavigate();
 
   const calculateGrowthRate = (current: number, previous: number) => {
     if (previous === 0) return 0;
     return ((current - previous) / previous) * 100;
+  };
+
+  const handleNavigate = () => {
+    navigate('/');
   };
 
   return (
@@ -56,6 +62,27 @@ const SalaryGrowth: FC = () => {
               </Box>
             ))}
           </>
+        ) : salaries.length === 0 ? (
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              marginTop: 4,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              등록된 연봉이 없습니다
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleNavigate}
+            >
+              연봉 등록하러가기
+            </Button>
+          </Box>
         ) : (
           salaries.map((salary, index) => (
             <Box
