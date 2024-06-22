@@ -1,4 +1,4 @@
-import { getToken, onMessage } from 'firebase/messaging';
+import { onMessage } from 'firebase/messaging';
 import { messaging } from './Firebase';
 import { NotificationContextType } from '../types/contexts/Notification';
 
@@ -9,44 +9,25 @@ const setupFirebaseMessaging = (
     navigator.serviceWorker
       .register('/firebase-messaging-sw.js')
       .then((registration) => {
-        console.log(
-          'Service Worker registered with scope:',
-          registration.scope
-        );
+        console.log('서비스 워커가 등록되었습니다. 범위:', registration.scope);
         Notification.requestPermission().then((permission) => {
           if (permission === 'granted') {
-            getToken(messaging, {
-              vapidKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
-              serviceWorkerRegistration: registration,
-            })
-              .then((currentToken) => {
-                if (currentToken) {
-                  console.log('Current token:', currentToken);
-                } else {
-                  console.log(
-                    'No registration token available. Request permission to generate one.'
-                  );
-                }
-              })
-              .catch((err: any) => {
-                console.error(
-                  'An error occurred while retrieving token. ',
-                  err
-                );
-              });
+            console.log('알림 권한이 부여되었습니다.');
+          } else {
+            console.log('알림 권한이 거부되었습니다.');
           }
         });
       })
       .catch((error) => {
-        console.log('Service Worker registration failed:', error);
+        console.log('서비스 워커 등록에 실패했습니다:', error);
       });
   }
 
   const unsubscribe = onMessage(messaging, (payload) => {
-    console.log('Message received. ', payload);
+    console.log('메시지가 도착했습니다.', payload);
     addNotification({
-      title: payload.notification?.title || 'No title',
-      body: payload.notification?.body || 'No body',
+      title: payload.notification?.title || '제목 없음',
+      body: payload.notification?.body || '내용 없음',
       image: payload.notification?.image,
       link: payload.fcmOptions?.link, // 사용 가능한 경우 링크 추가
     });

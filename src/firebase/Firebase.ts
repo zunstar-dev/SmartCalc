@@ -1,6 +1,5 @@
-// src/firebase.ts
 import { initializeApp } from 'firebase/app';
-import { getMessaging } from 'firebase/messaging';
+import { getMessaging, getToken } from 'firebase/messaging';
 import { getAnalytics, isSupported } from 'firebase/analytics';
 import { getAuth, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
 import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
@@ -31,7 +30,7 @@ const signInUser = async () => {
   try {
     await signInAnonymously(auth);
   } catch (error) {
-    console.error('Error signing in anonymously:', error);
+    console.error('익명으로 로그인하는 중 오류 발생:', error);
   }
 };
 
@@ -39,7 +38,7 @@ const saveSalaries = async (userId: string, salaries: string[]) => {
   try {
     await setDoc(doc(db, 'users', userId), { salaries });
   } catch (error) {
-    console.error('Error saving salaries:', error);
+    console.error('연봉을 저장하는 중 오류 발생:', error);
   }
 };
 
@@ -49,18 +48,43 @@ const loadSalaries = async (userId: string) => {
     if (docSnap.exists()) {
       return docSnap.data().salaries;
     } else {
-      console.log('No such document!');
+      console.log('해당 문서가 존재하지 않습니다!');
       return [];
     }
   } catch (error) {
-    console.error('Error loading salaries:', error);
+    console.error('연봉을 불러오는 중 오류 발생:', error);
     return [];
+  }
+};
+
+const saveToken = async (userId: string, token: string) => {
+  try {
+    await setDoc(doc(db, 'users', userId), { token }, { merge: true });
+  } catch (error) {
+    console.error('토큰을 저장하는 중 오류 발생:', error);
+  }
+};
+
+const requestAndSaveToken = async (userId: string) => {
+  try {
+    const currentToken = await getToken(messaging, {
+      vapidKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
+    });
+    if (currentToken) {
+      await saveToken(userId, currentToken);
+      console.log('토큰 저장 성공:', currentToken);
+    } else {
+      console.log('토큰을 가져올 수 없습니다.');
+    }
+  } catch (error) {
+    console.error('토큰을 요청하는 중 오류 발생:', error);
   }
 };
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    console.log('User ID:', user.uid);
+    console.log('사용자 ID:', user.uid);
+    requestAndSaveToken(user.uid);
   } else {
     signInUser();
   }
@@ -74,5 +98,7 @@ export {
   db,
   saveSalaries,
   loadSalaries,
+  saveToken,
+  requestAndSaveToken,
   signInUser,
 };
