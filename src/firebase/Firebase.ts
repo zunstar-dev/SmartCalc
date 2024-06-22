@@ -72,9 +72,16 @@ const requestAndSaveToken = async (
   setLoading: (loading: boolean) => void
 ) => {
   try {
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      console.log('알림 권한이 부여되지 않았습니다.');
+      return;
+    }
+
     const currentToken = await getToken(messaging, {
       vapidKey: import.meta.env.VITE_VAPID_PUBLIC_KEY,
     });
+
     if (currentToken) {
       await saveToken(userId, currentToken);
       console.log('토큰 저장 성공:', currentToken);

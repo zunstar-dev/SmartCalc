@@ -10,13 +10,6 @@ const setupFirebaseMessaging = (
       .register('/firebase-messaging-sw.js')
       .then((registration) => {
         console.log('서비스 워커가 등록되었습니다. 범위:', registration.scope);
-        Notification.requestPermission().then((permission) => {
-          if (permission === 'granted') {
-            console.log('알림 권한이 부여되었습니다.');
-          } else {
-            console.log('알림 권한이 거부되었습니다.');
-          }
-        });
       })
       .catch((error) => {
         console.log('서비스 워커 등록에 실패했습니다:', error);
