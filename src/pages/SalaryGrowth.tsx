@@ -1,5 +1,12 @@
 import { FC } from 'react';
-import { Box, Typography, Skeleton, Button } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Skeleton,
+  Button,
+  Card,
+  CardContent,
+} from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { Helmet } from 'react-helmet-async';
@@ -38,6 +45,7 @@ const SalaryGrowth: FC = () => {
           flexDirection: 'column',
           gap: 2,
           margin: 'auto',
+          maxWidth: 600,
         }}
       >
         {loading ? (
@@ -85,37 +93,39 @@ const SalaryGrowth: FC = () => {
           </Box>
         ) : (
           salaries.map((salary, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }}
-            >
-              <Typography sx={{ marginRight: 1 }}>
-                {salary ? Number(salary).toLocaleString('ko-KR') : '0'}
-              </Typography>
-              {index < salaries.length - 1 && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  <Typography>
+            <Card key={index}>
+              <CardContent
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '16px !important',
+                }}
+              >
+                <Typography>
+                  {salary ? Number(salary).toLocaleString('ko-KR') : '0'}
+                </Typography>
+                {index < salaries.length - 1 && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Typography>
+                      {calculateGrowthRate(
+                        Number(salaries[index]),
+                        Number(salaries[index + 1])
+                      ).toFixed(2)}
+                      %
+                    </Typography>
                     {calculateGrowthRate(
                       Number(salaries[index]),
                       Number(salaries[index + 1])
-                    ).toFixed(2)}
-                    %
-                  </Typography>
-                  {calculateGrowthRate(
-                    Number(salaries[index]),
-                    Number(salaries[index + 1])
-                  ) > 0 ? (
-                    <ArrowUpwardIcon sx={{ color: 'red' }} />
-                  ) : (
-                    <ArrowDownwardIcon sx={{ color: 'blue' }} />
-                  )}
-                </Box>
-              )}
-            </Box>
+                    ) > 0 ? (
+                      <ArrowUpwardIcon sx={{ color: 'red' }} />
+                    ) : (
+                      <ArrowDownwardIcon sx={{ color: 'blue' }} />
+                    )}
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
           ))
         )}
       </Box>

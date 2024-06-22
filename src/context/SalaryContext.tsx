@@ -24,8 +24,8 @@ export const SalaryProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       loadSalaries(user.uid).then((loadedSalaries) => {
         if (loadedSalaries) {
           setSalaries(loadedSalaries);
+          setLoading(false);
         }
-        setLoading(false);
       });
     }
   }, [user, loading, setLoading]);

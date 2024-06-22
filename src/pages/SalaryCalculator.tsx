@@ -1,8 +1,17 @@
 import { FC, useEffect, useState } from 'react';
-import { Box, Typography, Skeleton } from '@mui/material';
+import {
+  Box,
+  Typography,
+  Skeleton,
+  Card,
+  CardContent,
+  Grid,
+  Button,
+} from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useSalary } from '../context/SalaryContext';
 import { useLayout } from '../context/LayoutContext';
+import { useNavigate } from 'react-router-dom';
 
 const SalaryCalculator: FC = () => {
   const { salaries } = useSalary();
@@ -10,6 +19,8 @@ const SalaryCalculator: FC = () => {
   const [takeHomeSalary, setTakeHomeSalary] = useState<number | null>(null); // 실수령액 상태
   const [breakdown, setBreakdown] = useState<any>(null); // 급여 내역 상태
   const [taxTable, setTaxTable] = useState<any>(null); // 세금 테이블 상태
+  const [nonTaxableAmount] = useState<number>(200000); // 비과세액 상태
+  const navigate = useNavigate();
 
   // 컴포넌트가 마운트될 때 세금 테이블을 가져옴
   useEffect(() => {
@@ -34,7 +45,6 @@ const SalaryCalculator: FC = () => {
     numDependents: number,
     numChildren: number
   ) => {
-    const nonTaxableAmount = 200000; // 비과세액 (기본 20만 원)
     const monthlySalary = Math.floor(annualSalary / 12); // 월 급여 계산
     const taxableIncome = Math.floor(
       (annualSalary - nonTaxableAmount * 12) / 12
@@ -137,57 +147,165 @@ const SalaryCalculator: FC = () => {
           <Skeleton variant="rectangular" width="100%" height={300} />
         ) : salaries.length > 0 ? (
           <>
-            {takeHomeSalary !== null && breakdown && (
-              <>
-                <Typography variant="h6">
-                  가장 최근 연봉: {Number(salaries[0]).toLocaleString('ko-KR')}{' '}
-                  원
-                </Typography>
-
-                <Box sx={{ marginTop: 4 }}>
-                  <Typography variant="h6">계산 결과</Typography>
-                  <Typography variant="h6">
-                    월 예상 실수령액: {takeHomeSalary.toLocaleString()} 원
-                  </Typography>
-                  <Typography>
-                    국민연금: {breakdown.nationalPension.toLocaleString()} 원
-                  </Typography>
-                  <Typography>
-                    건강보험: {breakdown.healthInsurance.toLocaleString()} 원
-                  </Typography>
-                  <Typography>
-                    장기요양보험: {breakdown.longTermCare.toLocaleString()} 원
-                  </Typography>
-                  <Typography>
-                    고용보험: {breakdown.employmentInsurance.toLocaleString()}{' '}
-                    원
-                  </Typography>
-                  <Typography>
-                    소득세: {breakdown.incomeTax.toLocaleString()} 원
-                  </Typography>
-                  <Typography>
-                    지방소득세: {breakdown.localIncomeTax.toLocaleString()} 원
-                  </Typography>
-                  <Typography variant="h6">
-                    합계 금액:{' '}
-                    {(
-                      breakdown.nationalPension +
-                      breakdown.healthInsurance +
-                      breakdown.longTermCare +
-                      breakdown.employmentInsurance +
-                      breakdown.incomeTax +
-                      breakdown.localIncomeTax
-                    ).toLocaleString()}{' '}
-                    원
-                  </Typography>
+            <Card
+              sx={{
+                maxWidth: 600,
+                margin: 'auto',
+                marginBottom: 2,
+              }}
+            >
+              <CardContent
+                sx={{
+                  paddingBottom: '16px !important',
+                }}
+              >
+                <Box>
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontSize: 16, fontWeight: 'bold' }}
+                      >
+                        연봉
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="body2"
+                        align="right"
+                        sx={{ fontSize: 16, fontWeight: 'bold' }}
+                      >
+                        {Number(salaries[0]).toLocaleString('ko-KR')} 원
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </Box>
-              </>
-            )}
+              </CardContent>
+            </Card>
+            <Card sx={{ maxWidth: 600, margin: 'auto' }}>
+              <CardContent>
+                {takeHomeSalary !== null && breakdown && (
+                  <Grid container spacing={2}>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="body2"
+                        sx={{ fontSize: 16, fontWeight: 'bold' }}
+                      >
+                        월 예상 실수령액
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        variant="body2"
+                        align="right"
+                        sx={{ fontSize: 16, fontWeight: 'bold' }}
+                      >
+                        {takeHomeSalary.toLocaleString()} 원
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">비과세</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" align="right">
+                        {nonTaxableAmount} 원
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">국민연금</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" align="right">
+                        {breakdown.nationalPension.toLocaleString()} 원
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">건강보험</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" align="right">
+                        {breakdown.healthInsurance.toLocaleString()} 원
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">장기요양보험</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" align="right">
+                        {breakdown.longTermCare.toLocaleString()} 원
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">고용보험</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" align="right">
+                        {breakdown.employmentInsurance.toLocaleString()} 원
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">소득세</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" align="right">
+                        {breakdown.incomeTax.toLocaleString()} 원
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2">지방소득세</Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography variant="body2" align="right">
+                        {breakdown.localIncomeTax.toLocaleString()} 원
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography sx={{ fontSize: 16, fontWeight: 'bold' }}>
+                        합계 금액
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={6}>
+                      <Typography
+                        sx={{ fontSize: 16, fontWeight: 'bold' }}
+                        align="right"
+                      >
+                        {(
+                          breakdown.nationalPension +
+                          breakdown.healthInsurance +
+                          breakdown.longTermCare +
+                          breakdown.employmentInsurance +
+                          breakdown.incomeTax +
+                          breakdown.localIncomeTax
+                        ).toLocaleString()}{' '}
+                        원
+                      </Typography>
+                    </Grid>
+                  </Grid>
+                )}
+              </CardContent>
+            </Card>
           </>
         ) : (
-          <Typography variant="h6">
-            연봉 정보가 없습니다. 연봉을 등록해주세요.
-          </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 2,
+              marginTop: 4,
+            }}
+          >
+            <Typography variant="h6" gutterBottom>
+              등록된 연봉이 없습니다
+            </Typography>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => navigate('/')}
+            >
+              연봉 등록하러가기
+            </Button>
+          </Box>
         )}
       </Box>
     </>
