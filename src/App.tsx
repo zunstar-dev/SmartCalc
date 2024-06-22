@@ -10,10 +10,16 @@ import SalaryGrowth from './pages/SalaryGrowth';
 import Notifications from './components/common/Notifications';
 import { useNotification } from './context/NotificationContext';
 import setupFirebaseMessaging from './firebase/FirebaseNotificationManager';
+import { openExternalLink } from './helpers/openExternalLink';
 
 const App: FC = () => {
-  const { addNotification } = useNotification();
+  // inapp 브라우저 체크
+  useEffect(() => {
+    openExternalLink();
+  }, []);
 
+  // firebase 서비스 워커 설정
+  const { addNotification } = useNotification();
   useEffect(() => {
     const unsubscribe = setupFirebaseMessaging(addNotification);
 
