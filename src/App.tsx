@@ -10,12 +10,12 @@ import SalaryGrowth from './pages/SalaryGrowth';
 import Notifications from './components/common/Notifications';
 import { useNotification } from './context/NotificationContext';
 import setupFirebaseMessaging from './firebase/FirebaseNotificationManager';
-import { openExternalLink } from './helpers/openExternalLink';
+import { openExternalBrowser } from './helpers/openExternalBrowser';
 
 const App: FC = () => {
   // inapp 브라우저 체크
   useEffect(() => {
-    openExternalLink();
+    openExternalBrowser();
   }, []);
 
   // firebase 서비스 워커 설정
