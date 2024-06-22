@@ -7,7 +7,6 @@ import { useLayout } from '../context/LayoutContext';
 const SalaryCalculator: FC = () => {
   const { salaries } = useSalary();
   const { loading, setLoading } = useLayout();
-  const [annualSalary, setAnnualSalary] = useState<number>(0); // 연봉 상태
   const [takeHomeSalary, setTakeHomeSalary] = useState<number | null>(null); // 실수령액 상태
   const [breakdown, setBreakdown] = useState<any>(null); // 급여 내역 상태
   const [taxTable, setTaxTable] = useState<any>(null); // 세금 테이블 상태
@@ -24,7 +23,6 @@ const SalaryCalculator: FC = () => {
   useEffect(() => {
     if (salaries.length > 0 && taxTable && !loading) {
       const recentSalary = Number(salaries[0]);
-      setAnnualSalary(recentSalary);
       calculateTakeHomeSalary(recentSalary, 1, 0); // 자녀 수를 0명으로 가정
       setLoading(false);
     }
