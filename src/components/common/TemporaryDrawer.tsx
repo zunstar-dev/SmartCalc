@@ -31,6 +31,10 @@ const menuList1: MenuItem[] = [
 
 const menuList2: MenuItem[] = [
   {
+    text: '입사 정보 등록',
+    path: '/company-info',
+  },
+  {
     text: '연차 계산기',
     path: '/annual-leave-calculator',
   },

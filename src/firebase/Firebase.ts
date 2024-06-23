@@ -2,8 +2,8 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken } from 'firebase/messaging';
 import { getAnalytics, isSupported } from 'firebase/analytics';
-import { getAuth, signInAnonymously } from 'firebase/auth';
-import { doc, getDoc, getFirestore, setDoc } from 'firebase/firestore';
+import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { doc, getDoc, getFirestore, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -29,9 +29,40 @@ isSupported().then((supported) => {
 
 const signInUser = async () => {
   try {
-    await signInAnonymously(auth);
+    const { user } = await signInAnonymously(auth);
+    if (user) {
+      const docRef = doc(db, 'users', user.uid);
+      const docSnap = await getDoc(docRef);
+      if (!docSnap.exists()) {
+        await setDoc(docRef, {
+          created_at: serverTimestamp(),
+        });
+      }
+      await updateDoc(docRef, {
+        last_access: serverTimestamp(),
+      });
+    }
   } catch (error) {
     console.error('익명으로 로그인하는 중 오류 발생:', error);
+  }
+};
+
+const updateLastAccess = async (userId: string) => {
+  try {
+    const docRef = doc(db, 'users', userId);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      await updateDoc(docRef, {
+        last_access: serverTimestamp(),
+      });
+    } else {
+      await setDoc(docRef, {
+        last_access: serverTimestamp(),
+        created_at: serverTimestamp(), // 최초 생성시 created_at 필드도 추가
+      });
+    }
+  } catch (error) {
+    console.error('마지막 접속 시간을 업데이트하는 중 오류 발생:', error);
   }
 };
 
@@ -120,6 +151,31 @@ const loadSalaryInfo = async (userId: string) => {
   }
 };
 
+// New functions for saving and loading company info
+const saveCompanyInfo = async (userId: string, companyInfo: any) => {
+  try {
+    await setDoc(doc(db, 'users', userId), { companyInfo }, { merge: true });
+  } catch (error) {
+    console.error('회사 정보를 저장하는 중 오류 발생:', error);
+  }
+};
+
+const loadCompanyInfo = async (userId: string) => {
+  try {
+    const docSnap = await getDoc(doc(db, 'users', userId));
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      return data?.companyInfo || {};
+    } else {
+      console.log('해당 문서가 존재하지 않습니다!');
+      return {};
+    }
+  } catch (error) {
+    console.error('회사 정보를 불러오는 중 오류 발생:', error);
+    return {};
+  }
+};
+
 export {
   app,
   messaging,
@@ -131,6 +187,9 @@ export {
   saveToken,
   requestAndSaveToken,
   signInUser,
+  updateLastAccess,
   saveSalaryInfo,
   loadSalaryInfo,
+  saveCompanyInfo,
+  loadCompanyInfo,
 };
