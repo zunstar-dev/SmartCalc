@@ -26,6 +26,8 @@ const SalaryInfo: React.FC = () => {
   const [dependents, setDependents] = useState<number>(1); // 기본값 1명
   const [children, setChildren] = useState<number>(0);
   const [nonTaxableAmount, setNonTaxableAmount] = useState<string>('200000');
+  const [convertedNonTaxableAmount, setConvertedNonTaxableAmount] =
+    useState<string>('200,000');
   const [taxReduction, setTaxReduction] = useState<boolean>(false); // true: 예, false: 아니오
 
   useEffect(() => {
@@ -36,6 +38,11 @@ const SalaryInfo: React.FC = () => {
           setDependents(data.dependents ?? 1); // 기본값 1명
           setChildren(data.children ?? 0);
           setNonTaxableAmount(data.nonTaxableAmount?.toString() ?? '200000');
+          setConvertedNonTaxableAmount(
+            convertToKoreanCurrency(
+              data.nonTaxableAmount?.toString() ?? '200000'
+            )
+          );
           setTaxReduction(data.taxReduction ?? false); // 기본값 true (예)
         }
       });
@@ -87,16 +94,38 @@ const SalaryInfo: React.FC = () => {
     const value = e.target.value;
     if (value === '') {
       setNonTaxableAmount(''); // 빈 문자열을 허용
+      setConvertedNonTaxableAmount('');
     } else {
       const numberValue = Number(value.replace(/\D/g, '')); // 숫자가 아닌 문자는 제거
       setNonTaxableAmount(numberValue.toString());
+      setConvertedNonTaxableAmount(
+        convertToKoreanCurrency(numberValue.toString())
+      );
     }
   };
 
   const handleNonTaxableAmountBlur = () => {
     if (nonTaxableAmount === '') {
       setNonTaxableAmount('0'); // 입력 필드가 포커스를 잃을 때 기본값 설정
+      setConvertedNonTaxableAmount('0');
     }
+  };
+
+  const convertToKoreanCurrency = (num: string) => {
+    if (!num) return '';
+    const units = ['', '만', '억', '조', '경'];
+    const numArr = num.split('').reverse();
+    let result = '';
+    for (let i = 0; i < numArr.length; i += 4) {
+      const part = numArr
+        .slice(i, i + 4)
+        .reverse()
+        .join('');
+      if (part !== '0000') {
+        result = `${parseInt(part, 10).toLocaleString()}${units[Math.floor(i / 4)]} ${result}`;
+      }
+    }
+    return result.trim();
   };
 
   return (
@@ -215,15 +244,25 @@ const SalaryInfo: React.FC = () => {
             <TextField
               label="비과세액(식대포함)(월)"
               type="text"
-              value={nonTaxableAmount}
+              value={
+                nonTaxableAmount
+                  ? Number(nonTaxableAmount).toLocaleString('ko-KR')
+                  : ''
+              }
               onChange={handleNonTaxableAmountChange}
               onBlur={handleNonTaxableAmountBlur}
               fullWidth
               margin="normal"
               inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
             />
-
-            <Grid container spacing={2} sx={{ marginTop: 2 }}>
+            <Typography
+              variant="body2"
+              sx={{ padding: 1, width: '100%' }}
+              align="right"
+            >
+              {convertedNonTaxableAmount} 원
+            </Typography>
+            <Grid container spacing={2} sx={{ marginTop: 1 }}>
               <Grid item xs={12}>
                 <Button
                   variant="contained"

@@ -8,9 +8,9 @@ const setupFirebaseMessaging = (
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker
       .register('/firebase-messaging-sw.js')
-      .then((registration) => {
-        // console.log('서비스 워커가 등록되었습니다. 범위:', registration.scope);
-      })
+      // .then((registration) => {
+      //   console.log('서비스 워커가 등록되었습니다. 범위:', registration.scope);
+      // })
       .catch((error) => {
         console.log('서비스 워커 등록에 실패했습니다:', error);
       });
