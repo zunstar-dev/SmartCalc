@@ -213,7 +213,7 @@ const SalaryInfo: React.FC = () => {
             </Grid>
 
             <TextField
-              label="비과세액 (월)"
+              label="비과세액(식대포함)(월)"
               type="text"
               value={nonTaxableAmount}
               onChange={handleNonTaxableAmountChange}

@@ -140,13 +140,15 @@ const SalaryCalculator: FC = () => {
         incomeTax =
           1397000 + Math.floor((monthlySalary - 14000000) * 0.38 * 0.98);
       } else if (monthlySalary > 10000000) {
-        incomeTax = Math.floor((monthlySalary - 10000000) * 0.35 * 0.98);
+        incomeTax =
+          25000 + Math.floor((monthlySalary - 10000000) * 0.98 * 0.35);
       }
 
       const defaultTaxData = taxTable[10000000] || {};
       const defaultIncomeTax = defaultTaxData[numDependents] || 0;
+      const childDeduction = calculateChildDeduction(numChildren);
 
-      incomeTax = incomeTax + defaultIncomeTax;
+      incomeTax = incomeTax + defaultIncomeTax - childDeduction;
       localIncomeTax = Math.floor(incomeTax * 0.1);
     }
 
