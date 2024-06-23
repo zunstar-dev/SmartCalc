@@ -2,7 +2,7 @@
 import { initializeApp } from 'firebase/app';
 import { getMessaging, getToken } from 'firebase/messaging';
 import { getAnalytics, isSupported } from 'firebase/analytics';
-import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 import { doc, getDoc, getFirestore, setDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 
 const firebaseConfig = {
