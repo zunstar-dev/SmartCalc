@@ -10,6 +10,7 @@ import SalaryGrowth from './pages/SalaryGrowth';
 import Notifications from './components/common/Notifications';
 import { useNotification } from './context/NotificationContext';
 import setupFirebaseMessaging from './firebase/FirebaseNotificationManager';
+import SalaryInfo from './pages/SalaryInfo';
 
 const App: FC = () => {
   // firebase 서비스 워커 설정
@@ -33,6 +34,7 @@ const App: FC = () => {
       >
         <Routes>
           <Route path="/" element={<Salary />} />
+          <Route path="/salary-info" element={<SalaryInfo />} />
           <Route path="/salary-calculator" element={<SalaryCalculator />} />
           <Route path="/salary-growth" element={<SalaryGrowth />} />
         </Routes>

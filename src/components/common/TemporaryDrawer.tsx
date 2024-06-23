@@ -16,6 +16,10 @@ const menuListTop: MenuItem[] = [
     path: '/',
   },
   {
+    text: '연봉 정보 등록',
+    path: '/salary-info',
+  },
+  {
     text: '연봉 실수령액',
     path: '/salary-calculator',
   },

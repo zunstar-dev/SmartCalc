@@ -12,14 +12,21 @@ import { Helmet } from 'react-helmet-async';
 import { useSalary } from '../context/SalaryContext';
 import { useLayout } from '../context/LayoutContext';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+import { loadSalaryInfo } from '../firebase/Firebase';
 
 const SalaryCalculator: FC = () => {
   const { salaries } = useSalary();
   const { loading, setLoading } = useLayout();
-  const [takeHomeSalary, setTakeHomeSalary] = useState<number | null>(null); // 실수령액 상태
-  const [breakdown, setBreakdown] = useState<any>(null); // 급여 내역 상태
-  const [taxTable, setTaxTable] = useState<any>(null); // 세금 테이블 상태
-  const [nonTaxableAmount] = useState<number>(200000); // 비과세액 상태
+  const { user } = useAuth();
+  const [takeHomeSalary, setTakeHomeSalary] = useState<number | null>(null);
+  const [breakdown, setBreakdown] = useState<any>(null);
+  const [taxTable, setTaxTable] = useState<any>(null);
+  const [nonTaxableAmount, setNonTaxableAmount] = useState<number>(200000);
+  const [retirementOption, setRetirementOption] = useState<boolean>(true);
+  const [dependents, setDependents] = useState<number>(1);
+  const [children, setChildren] = useState<number>(0);
+  const [taxReduction, setTaxReduction] = useState<boolean>(true);
   const navigate = useNavigate();
 
   // 컴포넌트가 마운트될 때 세금 테이블을 가져옴
@@ -30,25 +37,37 @@ const SalaryCalculator: FC = () => {
       .catch((error) => console.error('Error loading tax table:', error));
   }, []);
 
+  // Firestore에서 연봉 정보를 가져옴
+  useEffect(() => {
+    if (user) {
+      loadSalaryInfo(user.uid).then((data) => {
+        if (data) {
+          setRetirementOption(data.retirementOption ?? true);
+          setDependents(data.dependents ?? 1);
+          setChildren(data.children ?? 0);
+          setNonTaxableAmount(data.nonTaxableAmount ?? 200000);
+          setTaxReduction(data.taxReduction ?? true);
+        }
+      });
+    }
+  }, [user]);
+
   // 연봉과 세금 테이블이 준비되었을 때 계산 함수 호출
   useEffect(() => {
     if (salaries.length > 0 && taxTable && !loading) {
       const recentSalary = Number(salaries[0]);
-      calculateTakeHomeSalary(recentSalary, 1, 0); // 자녀 수를 0명으로 가정
+      calculateTakeHomeSalary(recentSalary);
       setLoading(false);
     }
   }, [salaries, taxTable, loading, setLoading]);
 
   // 실수령액 계산 함수
-  const calculateTakeHomeSalary = (
-    annualSalary: number,
-    numDependents: number,
-    numChildren: number
-  ) => {
-    const monthlySalary = Math.floor(annualSalary / 12); // 월 급여 계산
+  const calculateTakeHomeSalary = (annualSalary: number) => {
+    const months = retirementOption ? 12 : 13; // 퇴직금 포함 여부에 따라 달 수 변경
+    const monthlySalary = Math.floor(annualSalary / months);
     const taxableIncome = Math.floor(
-      (annualSalary - nonTaxableAmount * 12) / 12
-    ); // 과세 소득 계산
+      (annualSalary - nonTaxableAmount * months) / months
+    );
 
     // 국민연금, 건강보험, 장기요양보험, 고용보험 계산
     const nationalPension = Math.floor(Math.min(taxableIncome * 0.045, 548100));
@@ -63,8 +82,8 @@ const SalaryCalculator: FC = () => {
     // 소득세 및 지방소득세 계산
     const { incomeTax, localIncomeTax } = calculateTax(
       taxableIncome,
-      numDependents,
-      numChildren
+      dependents,
+      children
     );
 
     // 실수령액 계산
@@ -103,6 +122,11 @@ const SalaryCalculator: FC = () => {
     // 자녀 공제 적용
     const childDeduction = calculateChildDeduction(numChildren);
     incomeTax = Math.max(0, incomeTax - childDeduction);
+
+    // 소득세 감면 적용
+    if (taxReduction) {
+      incomeTax = Math.floor(incomeTax * 0.1); // 90% 감면
+    }
 
     const localIncomeTax = Math.floor(incomeTax * 0.1);
 
@@ -208,7 +232,7 @@ const SalaryCalculator: FC = () => {
                     </Grid>
                     <Grid item xs={6}>
                       <Typography variant="body2" align="right">
-                        {nonTaxableAmount} 원
+                        {nonTaxableAmount.toLocaleString()} 원
                       </Typography>
                     </Grid>
                     <Grid item xs={6}>

@@ -13,7 +13,6 @@ calculator_front
 ├─ package-lock.json
 ├─ package.json
 ├─ public
-│  ├─ asdf.json
 │  ├─ favicon.ico
 │  ├─ firebase-messaging-sw.js
 │  ├─ google692050cab235abd9.html
@@ -54,7 +53,8 @@ calculator_front
 │  ├─ pages
 │  │  ├─ Salary.tsx
 │  │  ├─ SalaryCalculator.tsx
-│  │  └─ SalaryGrowth.tsx
+│  │  ├─ SalaryGrowth.tsx
+│  │  └─ SalaryInfo.tsx
 │  ├─ styles
 │  │  └─ App.css
 │  ├─ types

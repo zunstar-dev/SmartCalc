@@ -1,5 +1,13 @@
 import React, { FC, useState, useEffect } from 'react';
-import { Box, Button, TextField, Fab, Tooltip, Skeleton } from '@mui/material';
+import {
+  Box,
+  Button,
+  TextField,
+  Fab,
+  Tooltip,
+  Skeleton,
+  Typography,
+} from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Helmet } from 'react-helmet-async';
 import { useSalary } from '../context/SalaryContext';
@@ -14,6 +22,7 @@ const Salary: FC = () => {
   const { loading } = useLayout();
   const [localSalaries, setLocalSalaries] = useState<string[]>([]);
   const [firstSalary, setFirstSalary] = useState<string>('');
+  const [convertedFirstSalary, setConvertedFirstSalary] = useState<string>('');
 
   useEffect(() => {
     if (salaries.length > 0) {
@@ -33,10 +42,12 @@ const Salary: FC = () => {
   const handleFirstSalaryChange = (value: string) => {
     const formattedValue = formatSalary(value);
     setFirstSalary(formattedValue);
+    setConvertedFirstSalary(convertToKoreanCurrency(formattedValue));
   };
 
   const handleRefresh = () => {
     setFirstSalary('');
+    setConvertedFirstSalary('');
     setLocalSalaries(salaries);
   };
 
@@ -48,11 +59,29 @@ const Salary: FC = () => {
     setSalaries(updatedSalaries);
     await saveSalaries(user.uid, updatedSalaries);
     setFirstSalary('');
+    setConvertedFirstSalary('');
   };
 
   const handleDelete = async (index: number) => {
     const newSalaries = localSalaries.filter((_, i) => i !== index);
     setLocalSalaries(newSalaries);
+  };
+
+  const convertToKoreanCurrency = (num: string) => {
+    if (!num) return '';
+    const units = ['', '만', '억', '조', '경'];
+    const numArr = num.split('').reverse();
+    let result = '';
+    for (let i = 0; i < numArr.length; i += 4) {
+      const part = numArr
+        .slice(i, i + 4)
+        .reverse()
+        .join('');
+      if (part !== '0000') {
+        result = `${parseInt(part, 10).toLocaleString()}${units[Math.floor(i / 4)]} ${result}`;
+      }
+    }
+    return result.trim();
   };
 
   return (
@@ -79,7 +108,13 @@ const Salary: FC = () => {
           margin: 'auto',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box
+          sx={{
+            display: 'flex',
+            alignItems: 'center',
+            flexDirection: 'column',
+          }}
+        >
           <TextField
             label="내 연봉"
             value={
@@ -88,7 +123,15 @@ const Salary: FC = () => {
             onChange={(e) => handleFirstSalaryChange(e.target.value)}
             fullWidth
             type="text"
+            inputProps={{ maxLength: 26 }}
           />
+          <Typography
+            variant="body2"
+            sx={{ padding: 1, width: '100%' }}
+            align="right"
+          >
+            {convertedFirstSalary} 원
+          </Typography>
         </Box>
         {loading ? (
           <>
