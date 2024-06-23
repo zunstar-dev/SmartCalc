@@ -21,9 +21,18 @@ import CloseButton from '../components/button/CloseButton';
 const AnnualLeaveCalculator: React.FC = () => {
   const { user } = useAuth(); // Get the authenticated user
   const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>(
-    new Date().toISOString().split('T')[0]
-  );
+  const [endDate, setEndDate] = useState<string>(() => {
+    const today = new Date();
+    return today
+      .toLocaleDateString('ko-KR', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+      })
+      .replace(/\. /g, '-')
+      .replace('.', '');
+  });
+  console.log(endDate);
   const [results, setResults] = useState<
     { description: string; period: string; leave: number }[]
   >([]);
@@ -61,7 +70,8 @@ const AnnualLeaveCalculator: React.FC = () => {
 
   const calculateByJoiningDate = (start: Date, end: Date) => {
     let leave = 0;
-    const details: { description: string; period: string; leave: number }[] = [];
+    const details: { description: string; period: string; leave: number }[] =
+      [];
 
     // 1년 미만 연차 계산
     const firstYearEnd = new Date(start);
@@ -130,7 +140,8 @@ const AnnualLeaveCalculator: React.FC = () => {
 
   const calculateByAccountingDate = (start: Date, end: Date) => {
     let leave = 0;
-    const details: { description: string; period: string; leave: number }[] = [];
+    const details: { description: string; period: string; leave: number }[] =
+      [];
 
     // 첫 해 월차 계산
     const firstAccountingYearEnd = new Date(start.getFullYear(), 11, 31); // 첫 회계년도 끝: 해당 년도 12월 31일
@@ -147,87 +158,82 @@ const AnnualLeaveCalculator: React.FC = () => {
     if (firstYearLeave > 0) {
       details.push({
         description: `입사년(월차)`,
-        period: `${start.getFullYear()}. ${
-          start.getMonth() + 2
-        }. ${start.getDate()} ~ ${firstAccountingYearEnd.getFullYear()}. 12. ${
-          start.getDate()}`,
+        period: `${start.getFullYear()}. ${start.getMonth() + 2}. ${start.getDate()} ~ ${firstAccountingYearEnd.getFullYear()}. 12. ${start.getDate()}`,
         leave: firstYearLeave,
       });
     }
 
-    // 두 번째 해 연차 계산
-    const daysWorkedInFirstYear =
-      (firstAccountingYearEnd.getTime() - start.getTime()) /
-        (1000 * 60 * 60 * 24) +
-      1;
-    const firstYearAnnualLeave = parseFloat(
-      ((15 * daysWorkedInFirstYear) / 366).toFixed(1)
-    ); // 소수점 첫째 자리까지 반올림
+    // 두 번째 해 연차 계산, 입사일과 퇴사일이 같은 해일 경우 건너뜀
+    if (start.getFullYear() !== end.getFullYear()) {
+      const daysWorkedInFirstYear =
+        (firstAccountingYearEnd.getTime() - start.getTime()) /
+          (1000 * 60 * 60 * 24) +
+        1;
+      const firstYearAnnualLeave = parseFloat(
+        ((15 * daysWorkedInFirstYear) / 366).toFixed(1)
+      ); // 소수점 첫째 자리까지 반올림
 
-    if (firstYearAnnualLeave > 0) {
-      details.push({
-        description: `2년차(연차)`,
-        period: `${firstAccountingYearEnd.getFullYear() + 1}. 1. 1 ~ ${
-          firstAccountingYearEnd.getFullYear() + 1
-        }. 12. 31`,
-        leave: firstYearAnnualLeave,
-      });
-      leave += firstYearAnnualLeave;
-    }
-
-    // 두 번째 해 월차 계산
-    const secondYearEnd = new Date(start);
-    secondYearEnd.setFullYear(start.getFullYear() + 1);
-    secondYearEnd.setDate(secondYearEnd.getDate() - 1);
-
-    let secondYearLeave = 0;
-    current = new Date(start.getFullYear() + 1, 0, 1); // 1월 1일
-
-    while (current <= end && current <= secondYearEnd) {
-      secondYearLeave += 1;
-      leave += 1;
-      current.setMonth(current.getMonth() + 1);
-    }
-
-    if (secondYearLeave > 0) {
-      details.push({
-        description: `2년차(월차)`,
-        period: `${start.getFullYear() + 1}. 1. 1 ~ ${
-          secondYearEnd.getFullYear()
-        }. ${secondYearEnd.getMonth() + 1}. ${secondYearEnd.getDate()}`,
-        leave: secondYearLeave,
-      });
-    }
-
-    // 세 번째 해부터 연차 계산 (2년마다 1개씩 증가, 최대 25일까지)
-    let yearCount = 2;
-    if (start.getMonth() === 0 && start.getDate() === 1) {
-      yearCount = 3; // 입사일이 1월 1일인 경우
-    }
-    let nextYearStart = new Date(firstAccountingYearEnd);
-    nextYearStart.setFullYear(nextYearStart.getFullYear() + 1);
-    nextYearStart.setDate(nextYearStart.getDate() + 1);
-    let nextYearEnd = new Date(nextYearStart);
-    nextYearEnd.setFullYear(nextYearEnd.getFullYear() + 1);
-    nextYearEnd.setDate(nextYearEnd.getDate() - 1);
-
-    while (nextYearStart <= end) {
-      let yearLeave = 15;
-      if (yearCount >= 3) {
-        yearLeave = Math.min(15 + Math.floor((yearCount - 2) / 2), 25); // 3년차부터 2년마다 1개씩 증가, 최대 25개
+      if (firstYearAnnualLeave > 0) {
+        details.push({
+          description: `2년차(연차)`,
+          period: `${firstAccountingYearEnd.getFullYear() + 1}. 1. 1 ~ ${firstAccountingYearEnd.getFullYear() + 1}. 12. 31`,
+          leave: firstYearAnnualLeave,
+        });
+        leave += firstYearAnnualLeave;
       }
-      details.push({
-        description: `${yearCount}년`,
-        period: `${nextYearStart.getFullYear()}. 1. 1 ~ ${nextYearEnd.getFullYear()}. 12. 31`,
-        leave: yearLeave,
-      });
-      leave += yearLeave;
-      yearCount += 1;
-      nextYearStart = new Date(nextYearEnd);
+
+      // 두 번째 해 월차 계산
+      const secondYearEnd = new Date(start);
+      secondYearEnd.setFullYear(start.getFullYear() + 1);
+      secondYearEnd.setDate(secondYearEnd.getDate() - 1);
+
+      let secondYearLeave = 0;
+      current = new Date(start.getFullYear() + 1, 0, 1); // 1월 1일
+
+      while (current <= end && current <= secondYearEnd) {
+        secondYearLeave += 1;
+        leave += 1;
+        current.setMonth(current.getMonth() + 1);
+      }
+
+      if (secondYearLeave > 0) {
+        details.push({
+          description: `2년차(월차)`,
+          period: `${start.getFullYear() + 1}. 1. 1 ~ ${secondYearEnd.getFullYear()}. ${secondYearEnd.getMonth() + 1}. ${secondYearEnd.getDate()}`,
+          leave: secondYearLeave,
+        });
+      }
+
+      // 세 번째 해부터 연차 계산 (2년마다 1개씩 증가, 최대 25일까지)
+      let yearCount = 2;
+      if (start.getMonth() === 0 && start.getDate() === 1) {
+        yearCount = 3; // 입사일이 1월 1일인 경우
+      }
+      let nextYearStart = new Date(firstAccountingYearEnd);
+      nextYearStart.setFullYear(nextYearStart.getFullYear() + 1);
       nextYearStart.setDate(nextYearStart.getDate() + 1);
-      nextYearEnd = new Date(nextYearStart);
+      let nextYearEnd = new Date(nextYearStart);
       nextYearEnd.setFullYear(nextYearEnd.getFullYear() + 1);
       nextYearEnd.setDate(nextYearEnd.getDate() - 1);
+
+      while (nextYearStart <= end) {
+        let yearLeave = 15;
+        if (yearCount >= 3) {
+          yearLeave = Math.min(15 + Math.floor((yearCount - 2) / 2), 25); // 3년차부터 2년마다 1개씩 증가, 최대 25개
+        }
+        details.push({
+          description: `${yearCount}년`,
+          period: `${nextYearStart.getFullYear()}. 1. 1 ~ ${nextYearEnd.getFullYear()}. 12. 31`,
+          leave: yearLeave,
+        });
+        leave += yearLeave;
+        yearCount += 1;
+        nextYearStart = new Date(nextYearEnd);
+        nextYearStart.setDate(nextYearStart.getDate() + 1);
+        nextYearEnd = new Date(nextYearStart);
+        nextYearEnd.setFullYear(nextYearEnd.getFullYear() + 1);
+        nextYearEnd.setDate(nextYearEnd.getDate() - 1);
+      }
     }
 
     setAccountingResults(details);
