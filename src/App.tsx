@@ -13,6 +13,7 @@ import setupFirebaseMessaging from './firebase/FirebaseNotificationManager';
 import SalaryInfo from './pages/SalaryInfo';
 import ServiceTerms from './pages/ServiceTerms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
+import AnnualLeaveCalculator from './pages/AnnualLeaveCalculator';
 
 const App: FC = () => {
   // firebase 서비스 워커 설정
@@ -41,6 +42,10 @@ const App: FC = () => {
           <Route path="/salary-growth" element={<SalaryGrowth />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/service-terms" element={<ServiceTerms />} />
+          <Route
+            path="/annual-leave-calculator"
+            element={<AnnualLeaveCalculator />}
+          />
         </Routes>
         <Notifications />
       </Box>
