@@ -29,6 +29,17 @@ const menuListTop: MenuItem[] = [
   },
 ];
 
+const menuListBottom: MenuItem[] = [
+  {
+    text: '개인 정보 처리방침',
+    path: '/privacy-policy',
+  },
+  {
+    text: '서비스 이용 약관',
+    path: '/service-terms',
+  },
+];
+
 const TemporaryDrawer: FC = () => {
   const { open, toggleDrawer } = useLayout();
 
@@ -53,6 +64,19 @@ const TemporaryDrawer: FC = () => {
           ))}
         </List>
         <Divider />
+        <List>
+          {menuListBottom.map((data, index) => (
+            <ListItem key={index} disablePadding>
+              <ListItemButton
+                component={Link}
+                to={data.path}
+                onClick={handleDrawer}
+              >
+                <ListItemText primary={data.text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
       </Box>
     </Drawer>
   );
