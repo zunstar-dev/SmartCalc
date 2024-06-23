@@ -84,7 +84,7 @@ const requestAndSaveToken = async (
 
     if (currentToken) {
       await saveToken(userId, currentToken);
-      console.log('토큰 저장 성공:', currentToken);
+      // console.log('토큰 저장 성공:', currentToken);
     } else {
       console.log('토큰을 가져올 수 없습니다.');
     }

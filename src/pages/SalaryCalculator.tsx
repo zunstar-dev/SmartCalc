@@ -26,10 +26,9 @@ const SalaryCalculator: FC = () => {
   const [retirementOption, setRetirementOption] = useState<boolean>(true);
   const [dependents, setDependents] = useState<number>(1);
   const [children, setChildren] = useState<number>(0);
-  const [taxReduction, setTaxReduction] = useState<boolean>(true);
+  const [taxReduction, setTaxReduction] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // 컴포넌트가 마운트될 때 세금 테이블을 가져옴
   useEffect(() => {
     fetch('/taxTable.json')
       .then((response) => response.json())
@@ -37,7 +36,6 @@ const SalaryCalculator: FC = () => {
       .catch((error) => console.error('Error loading tax table:', error));
   }, []);
 
-  // Firestore에서 연봉 정보를 가져옴
   useEffect(() => {
     if (user) {
       loadSalaryInfo(user.uid).then((data) => {
@@ -46,13 +44,12 @@ const SalaryCalculator: FC = () => {
           setDependents(data.dependents ?? 1);
           setChildren(data.children ?? 0);
           setNonTaxableAmount(data.nonTaxableAmount ?? 200000);
-          setTaxReduction(data.taxReduction ?? true);
+          setTaxReduction(data.taxReduction ?? false);
         }
       });
     }
   }, [user]);
 
-  // 연봉과 세금 테이블이 준비되었을 때 계산 함수 호출
   useEffect(() => {
     if (salaries.length > 0 && taxTable && !loading) {
       const recentSalary = Number(salaries[0]);
@@ -61,36 +58,38 @@ const SalaryCalculator: FC = () => {
     }
   }, [salaries, taxTable, loading, setLoading]);
 
-  // 실수령액 계산 함수
   const calculateTakeHomeSalary = (annualSalary: number) => {
-    const months = retirementOption ? 12 : 13; // 퇴직금 포함 여부에 따라 달 수 변경
+    const months = retirementOption ? 12 : 13;
     const monthlySalary = Math.floor(annualSalary / months);
     const taxableIncome = Math.floor(
       (annualSalary - nonTaxableAmount * months) / months
     );
+    const upperLimit = 6170000;
+    const lowerLimit = 3900000;
 
-    // 국민연금, 건강보험, 장기요양보험, 고용보험 계산
-    const nationalPension = Math.floor(Math.min(taxableIncome * 0.045, 548100));
+    const nationalPension = Math.floor(
+      Math.min(
+        Math.max(taxableIncome * 0.045, lowerLimit * 0.045),
+        upperLimit * 0.045
+      )
+    );
+
     const healthInsurance = Math.floor(taxableIncome * 0.03545);
     const longTermCare = Math.floor(healthInsurance * 0.1295);
     const employmentInsurance = Math.floor(taxableIncome * 0.009);
 
-    // 총 보험료 계산
     const totalInsurance =
       nationalPension + healthInsurance + longTermCare + employmentInsurance;
 
-    // 소득세 및 지방소득세 계산
     const { incomeTax, localIncomeTax } = calculateTax(
-      taxableIncome,
+      monthlySalary,
       dependents,
       children
     );
 
-    // 실수령액 계산
     const takeHomeSalary =
       monthlySalary - totalInsurance - incomeTax - localIncomeTax;
 
-    // 상태 업데이트
     setTakeHomeSalary(takeHomeSalary);
     setBreakdown({
       monthlySalary,
@@ -103,32 +102,53 @@ const SalaryCalculator: FC = () => {
     });
   };
 
-  // 소득세 및 지방소득세 계산 함수
   const calculateTax = (
-    taxableIncome: number,
+    monthlySalary: number,
     numDependents: number,
     numChildren: number
   ) => {
-    if (!taxTable || taxableIncome < 1060000) {
-      return { incomeTax: 0, localIncomeTax: 0 };
+    let incomeTax = 0;
+    let localIncomeTax = 0;
+
+    if (monthlySalary <= 10000000) {
+      const taxableIncome = adjustIncome(monthlySalary);
+      const taxData = taxTable[taxableIncome] || {};
+      incomeTax = taxData[numDependents] || 0;
+
+      const childDeduction = calculateChildDeduction(numChildren);
+      incomeTax = Math.max(0, incomeTax - childDeduction);
+
+      if (taxReduction) {
+        incomeTax = Math.floor(incomeTax * 0.1);
+      }
+
+      localIncomeTax = Math.floor(incomeTax * 0.1);
+    } else {
+      if (monthlySalary > 87000000) {
+        incomeTax =
+          31034600 + Math.floor((monthlySalary - 87000000) * 0.45 * 0.98);
+      } else if (monthlySalary > 45000000) {
+        incomeTax =
+          13394600 + Math.floor((monthlySalary - 45000000) * 0.42 * 0.98);
+      } else if (monthlySalary > 30000000) {
+        incomeTax =
+          7394600 + Math.floor((monthlySalary - 30000000) * 0.4 * 0.98);
+      } else if (monthlySalary > 28000000) {
+        incomeTax =
+          6610600 + Math.floor((monthlySalary - 28000000) * 0.4 * 0.98);
+      } else if (monthlySalary > 14000000) {
+        incomeTax =
+          1397000 + Math.floor((monthlySalary - 14000000) * 0.38 * 0.98);
+      } else if (monthlySalary > 10000000) {
+        incomeTax = Math.floor((monthlySalary - 10000000) * 0.35 * 0.98);
+      }
+
+      const defaultTaxData = taxTable[10000000] || {};
+      const defaultIncomeTax = defaultTaxData[numDependents] || 0;
+
+      incomeTax = incomeTax + defaultIncomeTax;
+      localIncomeTax = Math.floor(incomeTax * 0.1);
     }
-
-    // 월 급여를 치환 규칙에 따라 변환 (월급 100000000 원까지는 데이터 가능)
-    const adjustedIncome = adjustIncome(taxableIncome);
-    const taxData = taxTable[adjustedIncome] || {};
-
-    let incomeTax = taxData[numDependents] || 0;
-
-    // 자녀 공제 적용
-    const childDeduction = calculateChildDeduction(numChildren);
-    incomeTax = Math.max(0, incomeTax - childDeduction);
-
-    // 소득세 감면 적용
-    if (taxReduction) {
-      incomeTax = Math.floor(incomeTax * 0.1); // 90% 감면
-    }
-
-    const localIncomeTax = Math.floor(incomeTax * 0.1);
 
     return {
       incomeTax,
@@ -136,7 +156,6 @@ const SalaryCalculator: FC = () => {
     };
   };
 
-  // 월 급여를 치환 규칙에 따라 변환하는 함수
   const adjustIncome = (income: number) => {
     if (income < 1060000) return income;
     if (income < 1500000) return Math.floor(income / 5000) * 5000;
@@ -144,7 +163,6 @@ const SalaryCalculator: FC = () => {
     return Math.floor(income / 20000) * 20000;
   };
 
-  // 자녀 공제 계산 함수
   const calculateChildDeduction = (numChildren: number) => {
     if (numChildren === 1) return 12500;
     if (numChildren === 2) return 29160;
