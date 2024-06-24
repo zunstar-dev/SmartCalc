@@ -33,7 +33,6 @@ const getInitialMode = () => {
 export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
   const [mode, setMode] = useState<'light' | 'dark'>(getInitialMode);
   const [open, setOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     localStorage.setItem('themeMode', mode);
@@ -50,7 +49,7 @@ export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       mode,
       open,
     }),
-    [mode, open, loading]
+    [mode, open]
   );
 
   const theme = useMemo(
