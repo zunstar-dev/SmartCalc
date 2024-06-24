@@ -1,16 +1,12 @@
 // src/pages/CompanyInfo.tsx
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  TextField,
-  Button,
-} from '@mui/material';
+import { Box, Card, CardContent, Grid, TextField, Button } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext'; // Assuming you have an AuthContext
-import { saveCompanyInfo, loadCompanyInfo } from '../firebase/Firebase';
+import {
+  loadCompanyInfo,
+  saveCompanyInfo,
+} from '../services/CompanyInfoService';
 
 const CompanyInfo: React.FC = () => {
   const { user } = useAuth(); // get current user info from context

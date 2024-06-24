@@ -13,16 +13,12 @@ import {
 } from '@mui/material';
 import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
 import { Helmet } from 'react-helmet-async';
-import { useSalary } from '../context/SalaryContext';
-import { useLayout } from '../context/LayoutContext';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { loadSalaryInfo } from '../firebase/Firebase';
-import CloseButton from '../components/button/CloseButton';
+import { loadSalaries, loadSalaryInfo } from '../../services/SalaryService';
+import { useAuth } from '../../context/AuthContext';
+import CloseButton from '../../components/button/CloseButton';
 
 const SalaryCalculator: FC = () => {
-  const { salaries } = useSalary();
-  const { loading, setLoading } = useLayout();
   const { user } = useAuth();
   const [takeHomeSalary, setTakeHomeSalary] = useState<number | null>(null);
   const [breakdown, setBreakdown] = useState<any>(null);
@@ -36,6 +32,20 @@ const SalaryCalculator: FC = () => {
 
   const [open, setOpen] = useState(false);
   const [modalContent, setModalContent] = useState('');
+
+  const [loading, setLoading] = useState<boolean>(true);
+  const [salaries, setSalaries] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      loadSalaries(user.uid).then((loadedSalaries) => {
+        if (loadedSalaries) {
+          setSalaries(loadedSalaries);
+          setLoading(false);
+        }
+      });
+    }
+  }, [user]);
 
   const handleOpen = (content: string) => {
     setModalContent(content);

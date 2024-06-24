@@ -10,19 +10,28 @@ import {
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { Helmet } from 'react-helmet-async';
-import { useSalary } from '../context/SalaryContext';
-import { useAuth } from '../context/AuthContext';
-import { useLayout } from '../context/LayoutContext';
-import { saveSalaries } from '../firebase/Firebase';
-import DeleteButton from '../components/button/DeleteButton';
+import { useAuth } from '../../context/AuthContext';
+import { loadSalaries, saveSalaries } from '../../services/SalaryService';
+import DeleteButton from '../../components/button/DeleteButton';
 
 const Salary: FC = () => {
   const { user } = useAuth();
-  const { salaries, setSalaries } = useSalary();
-  const { loading } = useLayout();
-  const [localSalaries, setLocalSalaries] = useState<string[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [salaries, setSalaries] = useState<string[]>([]);
   const [firstSalary, setFirstSalary] = useState<string>('');
   const [convertedFirstSalary, setConvertedFirstSalary] = useState<string>('');
+  const [localSalaries, setLocalSalaries] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      loadSalaries(user.uid).then((loadedSalaries) => {
+        if (loadedSalaries) {
+          setSalaries(loadedSalaries);
+          setLoading(false);
+        }
+      });
+    }
+  }, [user]);
 
   useEffect(() => {
     if (salaries.length > 0) {

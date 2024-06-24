@@ -4,17 +4,17 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { Box } from '@mui/material';
 import MenuAppBar from './components/common/MenuAppBar';
 import TemporaryDrawer from './components/common/TemporaryDrawer';
-import Salary from './pages/Salary';
-import SalaryCalculator from './pages/SalaryCalculator';
-import SalaryGrowth from './pages/SalaryGrowth';
 import Notifications from './components/common/Notifications';
 import { useNotification } from './context/NotificationContext';
 import setupFirebaseMessaging from './firebase/FirebaseNotificationManager';
-import SalaryInfo from './pages/SalaryInfo';
 import ServiceTerms from './pages/ServiceTerms';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import AnnualLeaveCalculator from './pages/AnnualLeaveCalculator';
 import CompanyInfo from './pages/CompanyInfo';
+import Salary from './pages/salary/Salary';
+import SalaryInfo from './pages/salary/SalaryInfo';
+import SalaryCalculator from './pages/salary/SalaryCalculator';
+import SalaryGrowth from './pages/salary/SalaryGrowth';
 
 const App: FC = () => {
   // firebase 서비스 워커 설정
@@ -47,10 +47,7 @@ const App: FC = () => {
             path="/annual-leave-calculator"
             element={<AnnualLeaveCalculator />}
           />
-          <Route
-            path="/company-info"
-            element={<CompanyInfo />}
-          />
+          <Route path="/company-info" element={<CompanyInfo />} />
         </Routes>
         <Notifications />
       </Box>

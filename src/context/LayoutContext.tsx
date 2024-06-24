@@ -15,10 +15,8 @@ import { LayoutContextType } from '../types/contexts/Layout';
 export const LayoutContext = createContext<LayoutContextType>({
   toggleColorMode: () => {},
   toggleDrawer: () => {},
-  setLoading: () => {},
   mode: 'light',
   open: false,
-  loading: true,
 });
 
 const getInitialMode = () => {
@@ -49,12 +47,8 @@ export const LayoutModeProvider: FC<PropsWithChildren<{}>> = ({ children }) => {
       toggleDrawer: (newOpen: boolean) => {
         setOpen(newOpen);
       },
-      setLoading: (loading: boolean) => {
-        setLoading(loading);
-      },
       mode,
       open,
-      loading,
     }),
     [mode, open, loading]
   );

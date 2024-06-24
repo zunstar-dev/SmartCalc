@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, useEffect, useState } from 'react';
 import {
   Box,
   Typography,
@@ -11,12 +11,14 @@ import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { useSalary } from '../context/SalaryContext';
-import { useLayout } from '../context/LayoutContext';
+import { useAuth } from '../../context/AuthContext';
+import { loadSalaries } from '../../services/SalaryService';
 
 const SalaryGrowth: FC = () => {
-  const { salaries } = useSalary();
-  const { loading } = useLayout();
+  const { user } = useAuth();
+  const [loading, setLoading] = useState<boolean>(true);
+  const [salaries, setSalaries] = useState<string[]>([]);
+
   const navigate = useNavigate();
 
   const calculateGrowthRate = (current: number, previous: number) => {
@@ -27,6 +29,17 @@ const SalaryGrowth: FC = () => {
   const handleNavigate = () => {
     navigate('/');
   };
+
+  useEffect(() => {
+    if (user) {
+      loadSalaries(user.uid).then((loadedSalaries) => {
+        if (loadedSalaries) {
+          setSalaries(loadedSalaries);
+          setLoading(false);
+        }
+      });
+    }
+  }, [user]);
 
   return (
     <>

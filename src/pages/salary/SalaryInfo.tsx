@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import {
   Box,
   Typography,
@@ -17,11 +17,11 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '../context/AuthContext'; // assuming you have an AuthContext
-import { saveSalaryInfo, loadSalaryInfo } from '../firebase/Firebase';
+import { loadSalaryInfo, saveSalaryInfo } from '../../services/SalaryService';
+import { useAuth } from '../../context/AuthContext';
 
-const SalaryInfo: React.FC = () => {
-  const { user } = useAuth(); // get current user info from context
+const SalaryInfo: FC = () => {
+  const { user } = useAuth();
   const [retirementOption, setRetirementOption] = useState<boolean>(true); // true: 별도, false: 포함
   const [dependents, setDependents] = useState<number>(1); // 기본값 1명
   const [children, setChildren] = useState<number>(0);
