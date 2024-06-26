@@ -98,7 +98,7 @@ const RetirementInfo: FC = () => {
         if (retirementData) {
           start = retirementData.startDate || start;
           end = retirementData.endDate || end;
-          setRetirementInfoData((prevInfo) => ({
+          setRetirementInfoData((prevInfo: RetirementInfoData) => ({
             ...prevInfo,
             retirementOption: retirementData.retirementOption ?? true,
           }));
