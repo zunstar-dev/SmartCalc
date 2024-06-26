@@ -26,7 +26,7 @@ export interface RetirementInfoRequest {
   endDate: string; // 퇴사일자
 }
 
-interface RetirementInfoData {
+export interface RetirementInfoData {
   startDate: string;
   endDate: string;
   employmentDays: number;
