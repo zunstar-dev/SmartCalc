@@ -19,7 +19,7 @@ import {
 } from 'date-fns';
 import { loadRetirementInfo } from '../services/RetirementService';
 import { convertToKoreanCurrency } from '../helpers/common';
-import { LoadRetirementInfoResponse } from '../types/Retirement';
+import { LoadRetirementInfoResponse } from '../types/retirement';
 
 const RetirementCalculator: FC = () => {
   const { user } = useAuth();

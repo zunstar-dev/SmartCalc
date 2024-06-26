@@ -24,7 +24,7 @@ import {
   LoadRetirementInfoResponse,
   RetirementInfoData,
   RetirementInfoRequest,
-} from '../types/Retirement';
+} from '../types/retirement';
 import { LoadCompanyInfoResponse } from '../types/company';
 
 const RetirementInfo: FC = () => {

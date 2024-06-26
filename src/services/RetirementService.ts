@@ -9,7 +9,7 @@ import { db } from '../firebase/Firebase';
 import {
   LoadRetirementInfoResponse,
   RetirementInfoRequest,
-} from '../types/Retirement';
+} from '../types/retirement';
 
 export const loadRetirementInfo = async (
   userId: string
