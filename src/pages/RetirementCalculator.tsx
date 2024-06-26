@@ -216,7 +216,10 @@ const RetirementCalculator: FC = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" align="right">
-                    {expectedRetirementPay.toLocaleString('ko-KR')} 원
+                    {expectedRetirementPay
+                      ? expectedRetirementPay.toLocaleString('ko-KR')
+                      : 0}{' '}
+                    원
                   </Typography>
                 </Grid>
               </Grid>
@@ -226,7 +229,10 @@ const RetirementCalculator: FC = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" align="right">
-                    {averageDailyWage.toLocaleString('ko-KR')} 원
+                    {averageDailyWage
+                      ? averageDailyWage.toLocaleString('ko-KR')
+                      : 0}{' '}
+                    원
                   </Typography>
                 </Grid>
               </Grid>
@@ -237,7 +243,7 @@ const RetirementCalculator: FC = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Typography variant="body2" align="right">
-                    {totalEmploymentDays} 일
+                    {totalEmploymentDays ? totalEmploymentDays : 0} 일
                   </Typography>
                 </Grid>
               </Grid>
@@ -249,7 +255,7 @@ const RetirementCalculator: FC = () => {
                 </Grid>
                 <Grid item xs={4}>
                   <Typography variant="body2" align="right">
-                    {threeMonthEmploymentDays} 일
+                    {threeMonthEmploymentDays ? threeMonthEmploymentDays : 0} 일
                   </Typography>
                 </Grid>
               </Grid>
