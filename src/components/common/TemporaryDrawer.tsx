@@ -40,6 +40,17 @@ const menuList2: MenuItem[] = [
   },
 ];
 
+const menuList3: MenuItem[] = [
+  {
+    text: '퇴직금 정보 입력',
+    path: '/retirement-info',
+  },
+  {
+    text: '퇴직금 계산기',
+    path: '/retirement-calculator',
+  },
+];
+
 const menuListBottom: MenuItem[] = [
   {
     text: '개인 정보 처리방침',
@@ -77,6 +88,20 @@ const TemporaryDrawer: FC = () => {
         <Divider />
         <List>
           {menuList2.map((data, index) => (
+            <ListItem key={index} disablePadding>
+              <ListItemButton
+                component={Link}
+                to={data.path}
+                onClick={handleDrawer}
+              >
+                <ListItemText primary={data.text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <Divider />
+        <List>
+          {menuList3.map((data, index) => (
             <ListItem key={index} disablePadding>
               <ListItemButton
                 component={Link}

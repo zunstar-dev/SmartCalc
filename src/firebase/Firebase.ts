@@ -27,7 +27,7 @@ isSupported().then((supported) => {
   }
 });
 
-const saveToken = async (userId: string, token: string) => {
+const saveToken = async (userId: string, token: string): Promise<void> => {
   try {
     await setDoc(doc(db, 'users', userId), { token }, { merge: true });
   } catch (error) {
@@ -35,7 +35,7 @@ const saveToken = async (userId: string, token: string) => {
   }
 };
 
-const requestAndSaveToken = async (userId: string) => {
+const requestAndSaveToken = async (userId: string): Promise<void> => {
   try {
     const permission = await Notification.requestPermission();
     if (permission !== 'granted') {

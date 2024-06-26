@@ -34,11 +34,11 @@ const SalaryCalculator: FC = () => {
   const [modalContent, setModalContent] = useState('');
 
   const [loading, setLoading] = useState<boolean>(true);
-  const [salaries, setSalaries] = useState<string[]>([]);
+  const [salaries, setSalaries] = useState<number[]>([]);
 
   useEffect(() => {
     if (user) {
-      loadSalaries(user.uid).then((loadedSalaries) => {
+      loadSalaries(user.uid).then((loadedSalaries: number[]) => {
         if (loadedSalaries) {
           setSalaries(loadedSalaries);
           setLoading(false);

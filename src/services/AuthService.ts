@@ -9,7 +9,7 @@ import {
 } from 'firebase/firestore';
 import { auth, db } from '../firebase/Firebase';
 
-export const signInUser = async () => {
+export const signInUser = async (): Promise<void> => {
   try {
     const { user } = await signInAnonymously(auth);
     if (user) {
@@ -20,7 +20,7 @@ export const signInUser = async () => {
   }
 };
 
-export const updateUserData = async (userId: string) => {
+export const updateUserData = async (userId: string): Promise<void> => {
   try {
     const docRef = doc(db, 'users', userId);
     const docSnap = await getDoc(docRef);
@@ -39,6 +39,8 @@ export const updateUserData = async (userId: string) => {
   }
 };
 
-export const listenToAuthChanges = (callback: (user: User | null) => void) => {
+export const listenToAuthChanges = (
+  callback: (user: User | null) => void
+): (() => void) => {
   return onAuthStateChanged(auth, callback);
 };

@@ -17,7 +17,7 @@ import { loadSalaries } from '../../services/SalaryService';
 const SalaryGrowth: FC = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState<boolean>(true);
-  const [salaries, setSalaries] = useState<string[]>([]);
+  const [salaries, setSalaries] = useState<number[]>([]);
 
   const navigate = useNavigate();
 
@@ -32,7 +32,7 @@ const SalaryGrowth: FC = () => {
 
   useEffect(() => {
     if (user) {
-      loadSalaries(user.uid).then((loadedSalaries) => {
+      loadSalaries(user.uid).then((loadedSalaries: number[]) => {
         if (loadedSalaries) {
           setSalaries(loadedSalaries);
           setLoading(false);

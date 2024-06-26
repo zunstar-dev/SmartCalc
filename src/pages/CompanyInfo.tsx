@@ -1,23 +1,21 @@
 // src/pages/CompanyInfo.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import { Box, Card, CardContent, Grid, TextField, Button } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
-import { useAuth } from '../context/AuthContext'; // Assuming you have an AuthContext
+import { useAuth } from '../context/AuthContext';
 import {
   loadCompanyInfo,
   saveCompanyInfo,
 } from '../services/CompanyInfoService';
 
-const CompanyInfo: React.FC = () => {
-  const { user } = useAuth(); // get current user info from context
-  const [companyName, setCompanyName] = useState<string>('');
+const CompanyInfo: FC = () => {
+  const { user } = useAuth();
   const [joinDate, setJoinDate] = useState<string>('');
 
   useEffect(() => {
     if (user) {
       loadCompanyInfo(user.uid).then((data) => {
         if (data) {
-          setCompanyName(data.companyName || '');
           setJoinDate(data.joinDate || '');
         }
       });
@@ -27,7 +25,6 @@ const CompanyInfo: React.FC = () => {
   const handleSave = async () => {
     if (user) {
       const companyInfo = {
-        companyName,
         joinDate,
       };
       await saveCompanyInfo(user.uid, companyInfo);

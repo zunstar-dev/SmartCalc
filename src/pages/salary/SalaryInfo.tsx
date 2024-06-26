@@ -13,79 +13,107 @@ import {
   FormControlLabel,
   Radio,
   IconButton,
+  Skeleton,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import { Helmet } from 'react-helmet-async';
 import { loadSalaryInfo, saveSalaryInfo } from '../../services/SalaryService';
 import { useAuth } from '../../context/AuthContext';
+import { SalaryData } from '../../types/salary';
 
 const SalaryInfo: FC = () => {
   const { user } = useAuth();
-  const [retirementOption, setRetirementOption] = useState<boolean>(true); // true: 별도, false: 포함
-  const [dependents, setDependents] = useState<number>(1); // 기본값 1명
-  const [children, setChildren] = useState<number>(0);
-  const [nonTaxableAmount, setNonTaxableAmount] = useState<string>('200000');
-  const [convertedNonTaxableAmount, setConvertedNonTaxableAmount] =
-    useState<string>('200,000');
-  const [taxReduction, setTaxReduction] = useState<boolean>(false); // true: 예, false: 아니오
+  const [loading, setLoading] = useState<boolean>(true);
+  const [salaryData, setSalaryData] = useState<SalaryData>({
+    retirementOption: true,
+    dependents: 1,
+    children: 0,
+    nonTaxableAmount: '200000',
+    convertedNonTaxableAmount: '200000',
+    taxReduction: false,
+  });
 
   useEffect(() => {
     if (user) {
       loadSalaryInfo(user.uid).then((data) => {
         if (data) {
-          setRetirementOption(data.retirementOption ?? true); // 기본값 true (별도)
-          setDependents(data.dependents ?? 1); // 기본값 1명
-          setChildren(data.children ?? 0);
-          setNonTaxableAmount(data.nonTaxableAmount?.toString() ?? '200000');
-          setConvertedNonTaxableAmount(
-            convertToKoreanCurrency(
+          setSalaryData({
+            retirementOption: data.retirementOption ?? true,
+            dependents: data.dependents ?? 1,
+            children: data.children ?? 0,
+            nonTaxableAmount: data.nonTaxableAmount?.toString() ?? '200000',
+            convertedNonTaxableAmount: convertToKoreanCurrency(
               data.nonTaxableAmount?.toString() ?? '200000'
-            )
-          );
-          setTaxReduction(data.taxReduction ?? false); // 기본값 true (예)
+            ),
+            taxReduction: data.taxReduction ?? false,
+          });
         }
+        setLoading(false);
       });
     }
   }, [user]);
 
   const handleSave = async () => {
     if (user) {
-      const salaryInfo = {
+      const {
+        retirementOption,
+        dependents,
+        children,
+        nonTaxableAmount,
+        taxReduction,
+      } = salaryData;
+      const infoToSave = {
         retirementOption,
         dependents,
         children,
         nonTaxableAmount: Number(nonTaxableAmount) || 0,
         taxReduction,
       };
-      await saveSalaryInfo(user.uid, salaryInfo);
+      await saveSalaryInfo(user.uid, infoToSave);
     }
   };
 
   const increaseDependents = () => {
-    setDependents(dependents + 1);
+    setSalaryData((prevInfo) => ({
+      ...prevInfo,
+      dependents: prevInfo.dependents + 1,
+    }));
   };
 
   const decreaseDependents = () => {
-    if (dependents > 1) {
-      setDependents(dependents - 1);
-      if (children > dependents - 1) {
-        setChildren(dependents - 1); // 자녀수가 부양가족수를 초과하지 않도록 조정
-      }
-    }
+    setSalaryData((prevInfo) => {
+      const newDependents =
+        prevInfo.dependents > 1 ? prevInfo.dependents - 1 : 1;
+      const newChildren =
+        prevInfo.children >= newDependents
+          ? newDependents - 1
+          : prevInfo.children;
+      return {
+        ...prevInfo,
+        dependents: newDependents,
+        children: newChildren,
+      };
+    });
   };
 
   const increaseChildren = () => {
-    if (children < dependents - 1) {
-      // 자녀수가 부양가족수와 같지 않도록 함
-      setChildren(children + 1);
-    }
+    setSalaryData((prevInfo) => {
+      if (prevInfo.children < prevInfo.dependents - 1) {
+        return {
+          ...prevInfo,
+          children: prevInfo.children + 1,
+        };
+      }
+      return prevInfo;
+    });
   };
 
   const decreaseChildren = () => {
-    if (children > 0) {
-      setChildren(children - 1);
-    }
+    setSalaryData((prevInfo) => ({
+      ...prevInfo,
+      children: prevInfo.children > 0 ? prevInfo.children - 1 : 0,
+    }));
   };
 
   const handleNonTaxableAmountChange = (
@@ -93,21 +121,30 @@ const SalaryInfo: FC = () => {
   ) => {
     const value = e.target.value;
     if (value === '') {
-      setNonTaxableAmount(''); // 빈 문자열을 허용
-      setConvertedNonTaxableAmount('');
+      setSalaryData((prevInfo) => ({
+        ...prevInfo,
+        nonTaxableAmount: '',
+        convertedNonTaxableAmount: '',
+      }));
     } else {
-      const numberValue = Number(value.replace(/\D/g, '')); // 숫자가 아닌 문자는 제거
-      setNonTaxableAmount(numberValue.toString());
-      setConvertedNonTaxableAmount(
-        convertToKoreanCurrency(numberValue.toString())
-      );
+      const numberValue = Number(value.replace(/\D/g, ''));
+      setSalaryData((prevInfo) => ({
+        ...prevInfo,
+        nonTaxableAmount: numberValue.toString(),
+        convertedNonTaxableAmount: convertToKoreanCurrency(
+          numberValue.toString()
+        ),
+      }));
     }
   };
 
   const handleNonTaxableAmountBlur = () => {
-    if (nonTaxableAmount === '') {
-      setNonTaxableAmount('0'); // 입력 필드가 포커스를 잃을 때 기본값 설정
-      setConvertedNonTaxableAmount('0');
+    if (salaryData.nonTaxableAmount === '') {
+      setSalaryData((prevInfo) => ({
+        ...prevInfo,
+        nonTaxableAmount: '0',
+        convertedNonTaxableAmount: '0',
+      }));
     }
   };
 
@@ -147,121 +184,170 @@ const SalaryInfo: FC = () => {
       >
         <Card>
           <CardContent>
-            <Box>
-              <FormControl component="fieldset">
+            <Box mb={2}>
+              <FormControl component="fieldset" fullWidth>
                 <FormLabel component="legend">
                   <Typography variant="body2">퇴직금</Typography>
                 </FormLabel>
-                <RadioGroup
-                  row
-                  value={retirementOption ? 'true' : 'false'}
-                  onChange={(e) =>
-                    setRetirementOption(e.target.value === 'true')
-                  }
-                >
-                  <FormControlLabel
-                    value="true"
-                    control={<Radio />}
-                    label="별도"
-                  />
-                  <FormControlLabel
-                    value="false"
-                    control={<Radio />}
-                    label="포함"
-                  />
-                </RadioGroup>
+                {loading ? (
+                  <Skeleton variant="rectangular" width="100%" height={46} />
+                ) : (
+                  <RadioGroup
+                    row
+                    value={salaryData.retirementOption ? 'true' : 'false'}
+                    onChange={(e) =>
+                      setSalaryData((prevInfo) => ({
+                        ...prevInfo,
+                        retirementOption: e.target.value === 'true',
+                      }))
+                    }
+                  >
+                    <FormControlLabel
+                      value="true"
+                      control={<Radio />}
+                      label="별도"
+                    />
+                    <FormControlLabel
+                      value="false"
+                      control={<Radio />}
+                      label="포함"
+                    />
+                  </RadioGroup>
+                )}
               </FormControl>
             </Box>
-            <Box>
-              <FormControl component="fieldset">
+            <Box mb={2}>
+              <FormControl component="fieldset" fullWidth>
                 <FormLabel component="legend">
                   <Typography variant="body2">소득세 감면 대상자</Typography>
                 </FormLabel>
-                <RadioGroup
-                  row
-                  value={taxReduction ? 'true' : 'false'}
-                  onChange={(e) => setTaxReduction(e.target.value === 'true')}
-                >
-                  <FormControlLabel
-                    value="true"
-                    control={<Radio />}
-                    label="예"
-                  />
-                  <FormControlLabel
-                    value="false"
-                    control={<Radio />}
-                    label="아니오"
-                  />
-                </RadioGroup>
+                {loading ? (
+                  <Skeleton variant="rectangular" width="100%" height={46} />
+                ) : (
+                  <RadioGroup
+                    row
+                    value={salaryData.taxReduction ? 'true' : 'false'}
+                    onChange={(e) =>
+                      setSalaryData((prevInfo) => ({
+                        ...prevInfo,
+                        taxReduction: e.target.value === 'true',
+                      }))
+                    }
+                  >
+                    <FormControlLabel
+                      value="true"
+                      control={<Radio />}
+                      label="예"
+                    />
+                    <FormControlLabel
+                      value="false"
+                      control={<Radio />}
+                      label="아니오"
+                    />
+                  </RadioGroup>
+                )}
               </FormControl>
             </Box>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item>
-                <Typography variant="body2">부양가족수:</Typography>
-              </Grid>
-              <Grid item>
-                <IconButton
-                  color="primary"
-                  disabled={dependents <= 1} // 1명 이하로 줄일 수 없음
-                  onClick={decreaseDependents}
+            <Box mb={2}>
+              <FormControl component="fieldset" fullWidth>
+                <FormLabel component="legend">
+                  <Typography variant="body2">부양가족수</Typography>
+                </FormLabel>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
                 >
-                  <RemoveIcon />
-                </IconButton>
-                <Typography variant="body2" display="inline">
-                  {dependents}
+                  {loading ? (
+                    <Skeleton variant="rectangular" width="100%" height={46} />
+                  ) : (
+                    <>
+                      <IconButton
+                        color="primary"
+                        disabled={salaryData.dependents <= 1} // 1명 이하로 줄일 수 없음
+                        onClick={decreaseDependents}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                      <Typography variant="body2" display="inline">
+                        {salaryData.dependents}
+                      </Typography>
+                      <IconButton color="primary" onClick={increaseDependents}>
+                        <AddIcon />
+                      </IconButton>
+                    </>
+                  )}
+                </Box>
+              </FormControl>
+            </Box>
+            <Box mb={2}>
+              <FormControl component="fieldset" fullWidth>
+                <FormLabel component="legend">
+                  <Typography variant="body2">20세 이하 자녀수</Typography>
+                </FormLabel>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  {loading ? (
+                    <Skeleton variant="rectangular" width="100%" height={46} />
+                  ) : (
+                    <>
+                      <IconButton
+                        color="primary"
+                        disabled={salaryData.children <= 0}
+                        onClick={decreaseChildren}
+                      >
+                        <RemoveIcon />
+                      </IconButton>
+                      <Typography variant="body2" display="inline">
+                        {salaryData.children}
+                      </Typography>
+                      <IconButton
+                        color="primary"
+                        disabled={
+                          salaryData.children >= salaryData.dependents - 1
+                        } // 자녀수가 부양가족수를 초과할 수 없음
+                        onClick={increaseChildren}
+                      >
+                        <AddIcon />
+                      </IconButton>
+                    </>
+                  )}
+                </Box>
+              </FormControl>
+            </Box>
+            {loading ? (
+              <Skeleton variant="rectangular" width="100%" height={46} />
+            ) : (
+              <Box mb={2}>
+                <TextField
+                  label="비과세액(식대포함)(월)"
+                  type="text"
+                  value={
+                    salaryData.nonTaxableAmount
+                      ? Number(salaryData.nonTaxableAmount).toLocaleString(
+                          'ko-KR'
+                        )
+                      : ''
+                  }
+                  onChange={handleNonTaxableAmountChange}
+                  onBlur={handleNonTaxableAmountBlur}
+                  fullWidth
+                  margin="normal"
+                  inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
+                />
+                <Typography
+                  variant="body2"
+                  sx={{ padding: 1, width: '100%' }}
+                  align="right"
+                >
+                  {salaryData.convertedNonTaxableAmount} 원
                 </Typography>
-                <IconButton color="primary" onClick={increaseDependents}>
-                  <AddIcon />
-                </IconButton>
-              </Grid>
-            </Grid>
+              </Box>
+            )}
 
-            <Grid container spacing={2} alignItems="center">
-              <Grid item>
-                <Typography variant="body2">20세 이하 자녀수:</Typography>
-              </Grid>
-              <Grid item>
-                <IconButton
-                  color="primary"
-                  disabled={children <= 0}
-                  onClick={decreaseChildren}
-                >
-                  <RemoveIcon />
-                </IconButton>
-                <Typography variant="body2" display="inline">
-                  {children}
-                </Typography>
-                <IconButton
-                  color="primary"
-                  disabled={children >= dependents - 1} // 자녀수가 부양가족수를 초과할 수 없음
-                  onClick={increaseChildren}
-                >
-                  <AddIcon />
-                </IconButton>
-              </Grid>
-            </Grid>
-
-            <TextField
-              label="비과세액(식대포함)(월)"
-              type="text"
-              value={
-                nonTaxableAmount
-                  ? Number(nonTaxableAmount).toLocaleString('ko-KR')
-                  : ''
-              }
-              onChange={handleNonTaxableAmountChange}
-              onBlur={handleNonTaxableAmountBlur}
-              fullWidth
-              margin="normal"
-              inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
-            />
-            <Typography
-              variant="body2"
-              sx={{ padding: 1, width: '100%' }}
-              align="right"
-            >
-              {convertedNonTaxableAmount} 원
-            </Typography>
             <Grid container spacing={2} sx={{ marginTop: 1 }}>
               <Grid item xs={12}>
                 <Button
@@ -269,6 +355,7 @@ const SalaryInfo: FC = () => {
                   color="primary"
                   onClick={handleSave}
                   fullWidth
+                  disabled={loading}
                 >
                   저장
                 </Button>

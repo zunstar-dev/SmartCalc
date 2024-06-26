@@ -1,5 +1,4 @@
-// src/pages/AnnualLeaveCalculator.tsx
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
 import {
   Box,
   Typography,
@@ -11,6 +10,7 @@ import {
   Tooltip,
   IconButton,
   Modal,
+  Skeleton,
 } from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
@@ -28,8 +28,9 @@ import {
   addDays,
 } from 'date-fns';
 
-const AnnualLeaveCalculator: React.FC = () => {
-  const { user } = useAuth(); // Get the authenticated user
+const AnnualLeaveCalculator: FC = () => {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState<boolean>(true);
   const [startDate, setStartDate] = useState<string>('');
   const [endDate, setEndDate] = useState<string>(() => {
     const today = new Date();
@@ -60,6 +61,7 @@ const AnnualLeaveCalculator: React.FC = () => {
         if (companyInfo.joinDate) {
           setStartDate(companyInfo.joinDate);
         }
+        setLoading(false);
       });
     }
   }, [user]);
@@ -268,30 +270,38 @@ const AnnualLeaveCalculator: React.FC = () => {
           <CardContent>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
-                <TextField
-                  label="입사일"
-                  type="date"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  margin="normal"
-                />
+                {loading ? (
+                  <Skeleton variant="rectangular" width="100%" height={46} />
+                ) : (
+                  <TextField
+                    label="입사일"
+                    type="date"
+                    value={startDate}
+                    onChange={(e) => setStartDate(e.target.value)}
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    margin="normal"
+                  />
+                )}
               </Grid>
               <Grid item xs={12}>
-                <TextField
-                  label="퇴사일"
-                  type="date"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  margin="normal"
-                />
+                {loading ? (
+                  <Skeleton variant="rectangular" width="100%" height={46} />
+                ) : (
+                  <TextField
+                    label="퇴사일"
+                    type="date"
+                    value={endDate}
+                    onChange={(e) => setEndDate(e.target.value)}
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    margin="normal"
+                  />
+                )}
               </Grid>
               <Grid item xs={12}>
                 <Button

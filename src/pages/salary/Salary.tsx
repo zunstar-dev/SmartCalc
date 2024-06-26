@@ -13,18 +13,19 @@ import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../../context/AuthContext';
 import { loadSalaries, saveSalaries } from '../../services/SalaryService';
 import DeleteButton from '../../components/button/DeleteButton';
+import { SaveSalariesRequest } from '../../types/salary';
 
 const Salary: FC = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState<boolean>(true);
-  const [salaries, setSalaries] = useState<string[]>([]);
+  const [salaries, setSalaries] = useState<number[]>([]);
   const [firstSalary, setFirstSalary] = useState<string>('');
   const [convertedFirstSalary, setConvertedFirstSalary] = useState<string>('');
   const [localSalaries, setLocalSalaries] = useState<string[]>([]);
 
   useEffect(() => {
     if (user) {
-      loadSalaries(user.uid).then((loadedSalaries) => {
+      loadSalaries(user.uid).then((loadedSalaries: number[]) => {
         if (loadedSalaries) {
           setSalaries(loadedSalaries);
           setLoading(false);
@@ -35,7 +36,7 @@ const Salary: FC = () => {
 
   useEffect(() => {
     if (salaries.length > 0) {
-      setLocalSalaries(salaries);
+      setLocalSalaries(salaries.map((salary) => salary.toString()));
     }
   }, [salaries]);
 
@@ -57,7 +58,7 @@ const Salary: FC = () => {
   const handleRefresh = () => {
     setFirstSalary('');
     setConvertedFirstSalary('');
-    setLocalSalaries(salaries);
+    setLocalSalaries(salaries.map((salary) => salary.toString()));
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -65,8 +66,14 @@ const Salary: FC = () => {
     const updatedSalaries = firstSalary
       ? [firstSalary, ...localSalaries]
       : localSalaries;
-    setSalaries(updatedSalaries);
-    await saveSalaries(user.uid, updatedSalaries);
+
+    // 문자열 배열을 숫자 배열로 변환
+    const numericSalaries: SaveSalariesRequest = {
+      salaries: updatedSalaries.map((salary) => parseInt(salary, 10)),
+    };
+
+    setSalaries(numericSalaries.salaries);
+    await saveSalaries(user.uid, numericSalaries);
     setFirstSalary('');
     setConvertedFirstSalary('');
   };

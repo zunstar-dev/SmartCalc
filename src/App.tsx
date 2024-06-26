@@ -15,6 +15,8 @@ import Salary from './pages/salary/Salary';
 import SalaryInfo from './pages/salary/SalaryInfo';
 import SalaryCalculator from './pages/salary/SalaryCalculator';
 import SalaryGrowth from './pages/salary/SalaryGrowth';
+import RetirementInfo from './pages/RetirementInfo';
+import RetirementCalculator from './pages/RetirementCalculator';
 
 const App: FC = () => {
   // firebase 서비스 워커 설정
@@ -48,6 +50,11 @@ const App: FC = () => {
             element={<AnnualLeaveCalculator />}
           />
           <Route path="/company-info" element={<CompanyInfo />} />
+          <Route path="/retirement-info" element={<RetirementInfo />} />
+          <Route
+            path="/retirement-calculator"
+            element={<RetirementCalculator />}
+          />
         </Routes>
         <Notifications />
       </Box>

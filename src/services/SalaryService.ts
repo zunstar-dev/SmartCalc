@@ -1,7 +1,15 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/Firebase';
+import {
+  SalaryInfoRequest,
+  SalaryInfoResponse,
+  SaveSalariesRequest,
+} from '../types/salary';
 
-export const saveSalaryInfo = async (userId: string, salaryInfo: any) => {
+export const saveSalaryInfo = async (
+  userId: string,
+  salaryInfo: SalaryInfoRequest
+): Promise<void> => {
   try {
     await setDoc(doc(db, 'users', userId), { salaryInfo }, { merge: true });
   } catch (error) {
@@ -9,23 +17,28 @@ export const saveSalaryInfo = async (userId: string, salaryInfo: any) => {
   }
 };
 
-export const loadSalaryInfo = async (userId: string) => {
+export const loadSalaryInfo = async (
+  userId: string
+): Promise<SalaryInfoResponse> => {
   try {
     const docSnap = await getDoc(doc(db, 'users', userId));
     if (docSnap.exists()) {
       const data = docSnap.data();
-      return data?.salaryInfo || {};
+      return data?.salaryInfo || ({} as SalaryInfoResponse);
     } else {
       console.log('해당 문서가 존재하지 않습니다!');
-      return {};
+      return {} as SalaryInfoResponse;
     }
   } catch (error) {
     console.error('연봉 정보를 불러오는 중 오류 발생:', error);
-    return {};
+    return {} as SalaryInfoResponse;
   }
 };
 
-export const saveSalaries = async (userId: string, salaries: string[]) => {
+export const saveSalaries = async (
+  userId: string,
+  salaries: SaveSalariesRequest
+): Promise<void> => {
   try {
     await setDoc(doc(db, 'users', userId), { salaries }, { merge: true });
   } catch (error) {
@@ -33,7 +46,7 @@ export const saveSalaries = async (userId: string, salaries: string[]) => {
   }
 };
 
-export const loadSalaries = async (userId: string) => {
+export const loadSalaries = async (userId: string): Promise<number[]> => {
   try {
     const docSnap = await getDoc(doc(db, 'users', userId));
     if (docSnap.exists()) {
