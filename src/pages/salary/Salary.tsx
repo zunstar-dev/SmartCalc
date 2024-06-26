@@ -73,7 +73,7 @@ const Salary: FC = () => {
     };
 
     setSalaries(numericSalaries.salaries);
-    await saveSalaries(user.uid, numericSalaries);
+    await saveSalaries(user.uid, numericSalaries.salaries);
     setFirstSalary('');
     setConvertedFirstSalary('');
   };

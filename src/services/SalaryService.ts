@@ -37,7 +37,7 @@ export const loadSalaryInfo = async (
 
 export const saveSalaries = async (
   userId: string,
-  salaries: SaveSalariesRequest
+  salaries: number[]
 ): Promise<void> => {
   try {
     await setDoc(doc(db, 'users', userId), { salaries }, { merge: true });
