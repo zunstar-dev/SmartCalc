@@ -25,3 +25,19 @@ export interface RetirementInfoRequest {
   startDate: string; // 입사일자
   endDate: string; // 퇴사일자
 }
+
+interface RetirementInfoData {
+  startDate: string;
+  endDate: string;
+  employmentDays: number;
+  monthlySalary: string;
+  convertedMonthlySalary: string;
+  annualBonus: string;
+  convertedAnnualBonus: string;
+  annualLeaveAllowance: string;
+  convertedAnnualLeaveAllowance: string;
+  averageDailyWage: number;
+  normalDailyWage: number;
+  retirementPay: number;
+  retirementOption: boolean;
+}
