@@ -20,7 +20,12 @@ import {
 import { loadCompanyInfo } from '../services/CompanyInfoService';
 import { loadSalaries } from '../services/SalaryService';
 import { format, addYears, subDays } from 'date-fns';
-import { RetirementInfoData, RetirementInfoRequest } from '../types/Retirement';
+import {
+  LoadRetirementInfoResponse,
+  RetirementInfoData,
+  RetirementInfoRequest,
+} from '../types/Retirement';
+import { LoadCompanyInfoResponse } from '../types/company';
 
 const RetirementInfo: FC = () => {
   const { user } = useAuth();
@@ -47,7 +52,9 @@ const RetirementInfo: FC = () => {
       await deleteRetirementInfo(user.uid);
 
       let start = '';
-      const companyData = await loadCompanyInfo(user.uid);
+      const companyData: LoadCompanyInfoResponse = await loadCompanyInfo(
+        user.uid
+      );
       if (companyData?.joinDate) {
         start = companyData.joinDate;
       } else {
@@ -94,7 +101,8 @@ const RetirementInfo: FC = () => {
         let calculatedMonthlySalary = 0;
 
         // 1순위: 퇴직 정보에서 시작 날짜 및 퇴직 날짜 가져오기
-        const retirementData = await loadRetirementInfo(user.uid);
+        const retirementData: LoadRetirementInfoResponse =
+          await loadRetirementInfo(user.uid);
         if (retirementData) {
           start = retirementData.startDate || start;
           end = retirementData.endDate || end;
@@ -106,7 +114,9 @@ const RetirementInfo: FC = () => {
 
         // 2순위: 회사 정보에서 입사일 가져오기
         if (!start) {
-          const companyData = await loadCompanyInfo(user.uid);
+          const companyData: LoadCompanyInfoResponse = await loadCompanyInfo(
+            user.uid
+          );
           if (companyData?.joinDate) {
             start = companyData.joinDate;
           }

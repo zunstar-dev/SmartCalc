@@ -85,8 +85,8 @@ const RetirementCalculator: FC = () => {
 
           calculateLastThreeMonths(new Date(retirementData.endDate));
         }
-        setLoading(false);
       }
+      setLoading(false);
     };
 
     loadData();
@@ -201,15 +201,15 @@ const RetirementCalculator: FC = () => {
     >
       <Card>
         <CardContent sx={{ padding: '16px !important' }}>
-          <Box>
-            {loading ? (
-              <Skeleton
-                variant="rectangular"
-                width="100%"
-                height={24}
-                animation="wave"
-              />
-            ) : (
+          {loading ? (
+            <Skeleton
+              variant="rectangular"
+              width="100%"
+              height={46}
+              animation="wave"
+            />
+          ) : (
+            <Box>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <Typography variant="body2">예상 퇴직금</Typography>
@@ -220,15 +220,6 @@ const RetirementCalculator: FC = () => {
                   </Typography>
                 </Grid>
               </Grid>
-            )}
-            {loading ? (
-              <Skeleton
-                variant="rectangular"
-                width="100%"
-                height={24}
-                animation="wave"
-              />
-            ) : (
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <Typography variant="body2">1일 평균 임금</Typography>
@@ -239,15 +230,7 @@ const RetirementCalculator: FC = () => {
                   </Typography>
                 </Grid>
               </Grid>
-            )}
-            {loading ? (
-              <Skeleton
-                variant="rectangular"
-                width="100%"
-                height={24}
-                animation="wave"
-              />
-            ) : (
+
               <Grid container spacing={2}>
                 <Grid item xs={6}>
                   <Typography variant="body2">총 재직일수</Typography>
@@ -258,15 +241,6 @@ const RetirementCalculator: FC = () => {
                   </Typography>
                 </Grid>
               </Grid>
-            )}
-            {loading ? (
-              <Skeleton
-                variant="rectangular"
-                width="100%"
-                height={24}
-                animation="wave"
-              />
-            ) : (
               <Grid container spacing={2}>
                 <Grid item xs={8}>
                   <Typography variant="body2">
@@ -279,8 +253,8 @@ const RetirementCalculator: FC = () => {
                   </Typography>
                 </Grid>
               </Grid>
-            )}
-          </Box>
+            </Box>
+          )}
         </CardContent>
       </Card>
       <Card>
@@ -419,7 +393,6 @@ const RetirementCalculator: FC = () => {
               color="primary"
               onClick={handleSearch}
               fullWidth
-              disabled={loading}
             >
               조회
             </Button>

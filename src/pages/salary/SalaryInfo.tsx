@@ -76,14 +76,14 @@ const SalaryInfo: FC = () => {
   };
 
   const increaseDependents = () => {
-    setSalaryData((prevInfo) => ({
+    setSalaryData((prevInfo: SalaryData) => ({
       ...prevInfo,
       dependents: prevInfo.dependents + 1,
     }));
   };
 
   const decreaseDependents = () => {
-    setSalaryData((prevInfo) => {
+    setSalaryData((prevInfo: SalaryData) => {
       const newDependents =
         prevInfo.dependents > 1 ? prevInfo.dependents - 1 : 1;
       const newChildren =
@@ -99,7 +99,7 @@ const SalaryInfo: FC = () => {
   };
 
   const increaseChildren = () => {
-    setSalaryData((prevInfo) => {
+    setSalaryData((prevInfo: SalaryData) => {
       if (prevInfo.children < prevInfo.dependents - 1) {
         return {
           ...prevInfo,
@@ -111,7 +111,7 @@ const SalaryInfo: FC = () => {
   };
 
   const decreaseChildren = () => {
-    setSalaryData((prevInfo) => ({
+    setSalaryData((prevInfo: SalaryData) => ({
       ...prevInfo,
       children: prevInfo.children > 0 ? prevInfo.children - 1 : 0,
     }));
@@ -122,14 +122,14 @@ const SalaryInfo: FC = () => {
   ) => {
     const value = e.target.value;
     if (value === '') {
-      setSalaryData((prevInfo) => ({
+      setSalaryData((prevInfo: SalaryData) => ({
         ...prevInfo,
         nonTaxableAmount: '',
         convertedNonTaxableAmount: '',
       }));
     } else {
       const numberValue = Number(value.replace(/\D/g, ''));
-      setSalaryData((prevInfo) => ({
+      setSalaryData((prevInfo: SalaryData) => ({
         ...prevInfo,
         nonTaxableAmount: numberValue.toString(),
         convertedNonTaxableAmount: convertToKoreanCurrency(
@@ -141,7 +141,7 @@ const SalaryInfo: FC = () => {
 
   const handleNonTaxableAmountBlur = () => {
     if (salaryData.nonTaxableAmount === '') {
-      setSalaryData((prevInfo) => ({
+      setSalaryData((prevInfo: SalaryData) => ({
         ...prevInfo,
         nonTaxableAmount: '0',
         convertedNonTaxableAmount: '0',
@@ -185,7 +185,7 @@ const SalaryInfo: FC = () => {
                     row
                     value={salaryData.retirementOption ? 'true' : 'false'}
                     onChange={(e) =>
-                      setSalaryData((prevInfo) => ({
+                      setSalaryData((prevInfo: SalaryData) => ({
                         ...prevInfo,
                         retirementOption: e.target.value === 'true',
                       }))
@@ -222,7 +222,7 @@ const SalaryInfo: FC = () => {
                     row
                     value={salaryData.taxReduction ? 'true' : 'false'}
                     onChange={(e) =>
-                      setSalaryData((prevInfo) => ({
+                      setSalaryData((prevInfo: SalaryData) => ({
                         ...prevInfo,
                         taxReduction: e.target.value === 'true',
                       }))
