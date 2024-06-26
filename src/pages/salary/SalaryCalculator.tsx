@@ -214,7 +214,12 @@ const SalaryCalculator: FC = () => {
       </Helmet>
       <Box>
         {loading ? (
-          <Skeleton variant="rectangular" width="100%" height={300} />
+          <Skeleton
+            variant="rectangular"
+            width="100%"
+            height={300}
+            animation="wave"
+          />
         ) : salaries.length > 0 ? (
           <>
             <Card

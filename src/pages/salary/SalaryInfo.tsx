@@ -174,7 +174,12 @@ const SalaryInfo: FC = () => {
                   <Typography variant="body2">퇴직금</Typography>
                 </FormLabel>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <RadioGroup
                     row
@@ -206,7 +211,12 @@ const SalaryInfo: FC = () => {
                   <Typography variant="body2">소득세 감면 대상자</Typography>
                 </FormLabel>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <RadioGroup
                     row
@@ -243,7 +253,12 @@ const SalaryInfo: FC = () => {
                   justifyContent="space-between"
                 >
                   {loading ? (
-                    <Skeleton variant="rectangular" width="100%" height={46} />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={46}
+                      animation="wave"
+                    />
                   ) : (
                     <>
                       <IconButton
@@ -275,7 +290,12 @@ const SalaryInfo: FC = () => {
                   justifyContent="space-between"
                 >
                   {loading ? (
-                    <Skeleton variant="rectangular" width="100%" height={46} />
+                    <Skeleton
+                      variant="rectangular"
+                      width="100%"
+                      height={46}
+                      animation="wave"
+                    />
                   ) : (
                     <>
                       <IconButton
@@ -303,7 +323,12 @@ const SalaryInfo: FC = () => {
               </FormControl>
             </Box>
             {loading ? (
-              <Skeleton variant="rectangular" width="100%" height={46} />
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={46}
+                animation="wave"
+              />
             ) : (
               <Box mb={2}>
                 <TextField

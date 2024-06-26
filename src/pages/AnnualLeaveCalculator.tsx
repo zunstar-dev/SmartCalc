@@ -271,7 +271,12 @@ const AnnualLeaveCalculator: FC = () => {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <TextField
                     label="입사일"
@@ -288,7 +293,12 @@ const AnnualLeaveCalculator: FC = () => {
               </Grid>
               <Grid item xs={12}>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <TextField
                     label="퇴사일"

@@ -244,10 +244,15 @@ const RetirementInfo: FC = () => {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={6}>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <TextField
-                    label="입사일자"
+                    label="입사일"
                     type="date"
                     name="startDate"
                     value={retirementInfoData.startDate}
@@ -267,10 +272,15 @@ const RetirementInfo: FC = () => {
               </Grid>
               <Grid item xs={12} sm={6}>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <TextField
-                    label="퇴직일자"
+                    label="퇴직일"
                     type="date"
                     name="endDate"
                     value={retirementInfoData.endDate}
@@ -293,7 +303,12 @@ const RetirementInfo: FC = () => {
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <Box mb={2}>
                     <TextField
@@ -325,7 +340,12 @@ const RetirementInfo: FC = () => {
               </Grid>
               <Grid item xs={6}>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <Box mb={2}>
                     <TextField
@@ -357,7 +377,12 @@ const RetirementInfo: FC = () => {
               </Grid>
               <Grid item xs={6}>
                 {loading ? (
-                  <Skeleton variant="rectangular" width="100%" height={46} />
+                  <Skeleton
+                    variant="rectangular"
+                    width="100%"
+                    height={46}
+                    animation="wave"
+                  />
                 ) : (
                   <Box mb={2}>
                     <TextField

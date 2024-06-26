@@ -8,6 +8,7 @@ import {
   Typography,
   Divider,
   Button,
+  Skeleton,
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -36,6 +37,7 @@ const RetirementCalculator: FC = () => {
   const [totalEmploymentDays, setTotalEmploymentDays] = useState<number>(0);
   const [threeMonthEmploymentDays, setThreeMonthEmploymentDays] =
     useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const loadData = async () => {
@@ -81,6 +83,7 @@ const RetirementCalculator: FC = () => {
 
           calculateLastThreeMonths(new Date(retirementData.endDate));
         }
+        setLoading(false);
       }
     };
 
@@ -197,49 +200,84 @@ const RetirementCalculator: FC = () => {
       <Card>
         <CardContent sx={{ padding: '16px !important' }}>
           <Box>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Typography variant="body2">예상 퇴직금</Typography>
+            {loading ? (
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={24}
+                animation="wave"
+              />
+            ) : (
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="body2">예상 퇴직금</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" align="right">
+                    {expectedRetirementPay.toLocaleString('ko-KR')} 원
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" align="right">
-                  {expectedRetirementPay.toLocaleString('ko-KR')} 원
-                </Typography>
+            )}
+            {loading ? (
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={24}
+                animation="wave"
+              />
+            ) : (
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="body2">1일 평균 임금</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" align="right">
+                    {averageDailyWage.toLocaleString('ko-KR')} 원
+                  </Typography>
+                </Grid>
               </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Typography variant="body2">1일 평균 임금</Typography>
+            )}
+            {loading ? (
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={24}
+                animation="wave"
+              />
+            ) : (
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <Typography variant="body2">총 재직일수</Typography>
+                </Grid>
+                <Grid item xs={6}>
+                  <Typography variant="body2" align="right">
+                    {totalEmploymentDays} 일
+                  </Typography>
+                </Grid>
               </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" align="right">
-                  {averageDailyWage.toLocaleString('ko-KR')} 원
-                </Typography>
+            )}
+            {loading ? (
+              <Skeleton
+                variant="rectangular"
+                width="100%"
+                height={24}
+                animation="wave"
+              />
+            ) : (
+              <Grid container spacing={2}>
+                <Grid item xs={8}>
+                  <Typography variant="body2">
+                    퇴직일 이전 3개월간의 총 일수
+                  </Typography>
+                </Grid>
+                <Grid item xs={4}>
+                  <Typography variant="body2" align="right">
+                    {threeMonthEmploymentDays} 일
+                  </Typography>
+                </Grid>
               </Grid>
-            </Grid>
-
-            <Grid container spacing={2}>
-              <Grid item xs={6}>
-                <Typography variant="body2">총 재직일수</Typography>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography variant="body2" align="right">
-                  {totalEmploymentDays} 일
-                </Typography>
-              </Grid>
-            </Grid>
-            <Grid container spacing={2}>
-              <Grid item xs={8}>
-                <Typography variant="body2">
-                  퇴직일 이전 3개월간의 총 일수
-                </Typography>
-              </Grid>
-              <Grid item xs={4}>
-                <Typography variant="body2" align="right">
-                  {threeMonthEmploymentDays} 일
-                </Typography>
-              </Grid>
-            </Grid>
+            )}
           </Box>
         </CardContent>
       </Card>
@@ -247,42 +285,69 @@ const RetirementCalculator: FC = () => {
         <CardContent>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <TextField
-                label="입사일자"
-                type="date"
-                value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                margin="normal"
-              />
+              {loading ? (
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={46}
+                  animation="wave"
+                />
+              ) : (
+                <TextField
+                  label="입사일자"
+                  type="date"
+                  value={startDate}
+                  onChange={(e) => setStartDate(e.target.value)}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  margin="normal"
+                />
+              )}
             </Grid>
             <Grid item xs={12}>
-              <TextField
-                label="퇴사일자"
-                type="date"
-                value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
-                fullWidth
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                margin="normal"
-              />
+              {loading ? (
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={46}
+                  animation="wave"
+                />
+              ) : (
+                <TextField
+                  label="퇴사일자"
+                  type="date"
+                  value={endDate}
+                  onChange={(e) => setEndDate(e.target.value)}
+                  fullWidth
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  margin="normal"
+                />
+              )}
             </Grid>
             <Divider sx={{ my: 2 }} />
             <Grid item xs={12}>
-              <TextField
-                label="월 기본급"
-                type="text"
-                value={Number(monthlySalary).toLocaleString('ko-KR')}
-                onChange={handleMonthlySalaryChange}
-                onBlur={handleMonthlySalaryBlur}
-                fullWidth
-                margin="normal"
-              />
+              {loading ? (
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={46}
+                  animation="wave"
+                />
+              ) : (
+                <TextField
+                  label="월 기본급"
+                  type="text"
+                  value={Number(monthlySalary).toLocaleString('ko-KR')}
+                  onChange={handleMonthlySalaryChange}
+                  onBlur={handleMonthlySalaryBlur}
+                  fullWidth
+                  margin="normal"
+                />
+              )}
               <Typography
                 variant="body2"
                 sx={{ padding: 1, width: '100%' }}
@@ -292,15 +357,24 @@ const RetirementCalculator: FC = () => {
               </Typography>
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                label="연간 상여금"
-                type="text"
-                value={Number(annualBonus).toLocaleString('ko-KR')}
-                onChange={handleAnnualBonusChange}
-                onBlur={handleAnnualBonusBlur}
-                fullWidth
-                margin="normal"
-              />
+              {loading ? (
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={46}
+                  animation="wave"
+                />
+              ) : (
+                <TextField
+                  label="연간 상여금"
+                  type="text"
+                  value={Number(annualBonus).toLocaleString('ko-KR')}
+                  onChange={handleAnnualBonusChange}
+                  onBlur={handleAnnualBonusBlur}
+                  fullWidth
+                  margin="normal"
+                />
+              )}
               <Typography
                 variant="body2"
                 sx={{ padding: 1, width: '100%' }}
@@ -310,15 +384,24 @@ const RetirementCalculator: FC = () => {
               </Typography>
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                label="연차수당"
-                type="text"
-                value={Number(annualLeaveAllowance).toLocaleString('ko-KR')}
-                onChange={handleAnnualLeaveAllowanceChange}
-                onBlur={handleAnnualLeaveAllowanceBlur}
-                fullWidth
-                margin="normal"
-              />
+              {loading ? (
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={46}
+                  animation="wave"
+                />
+              ) : (
+                <TextField
+                  label="연차수당"
+                  type="text"
+                  value={Number(annualLeaveAllowance).toLocaleString('ko-KR')}
+                  onChange={handleAnnualLeaveAllowanceChange}
+                  onBlur={handleAnnualLeaveAllowanceBlur}
+                  fullWidth
+                  margin="normal"
+                />
+              )}
               <Typography
                 variant="body2"
                 sx={{ padding: 1, width: '100%' }}
@@ -334,6 +417,7 @@ const RetirementCalculator: FC = () => {
               color="primary"
               onClick={handleSearch}
               fullWidth
+              disabled={loading}
             >
               조회
             </Button>

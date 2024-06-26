@@ -1,6 +1,14 @@
 // src/pages/CompanyInfo.tsx
 import { useState, useEffect, FC } from 'react';
-import { Box, Card, CardContent, Grid, TextField, Button } from '@mui/material';
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  TextField,
+  Button,
+  Skeleton,
+} from '@mui/material';
 import { Helmet } from 'react-helmet-async';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -11,12 +19,14 @@ import {
 const CompanyInfo: FC = () => {
   const { user } = useAuth();
   const [joinDate, setJoinDate] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     if (user) {
       loadCompanyInfo(user.uid).then((data) => {
         if (data) {
           setJoinDate(data.joinDate || '');
+          setLoading(false);
         }
       });
     }
@@ -50,21 +60,31 @@ const CompanyInfo: FC = () => {
       >
         <Card>
           <CardContent sx={{ padding: '16px !important' }}>
-            <Grid container spacing={2} alignItems="center">
-              <Grid item xs={12}>
-                <TextField
-                  label="입사일"
-                  type="date"
-                  value={joinDate}
-                  onChange={(e) => setJoinDate(e.target.value)}
-                  fullWidth
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  margin="normal"
+            <Grid item xs={12} sm={6}>
+              {loading ? (
+                <Skeleton
+                  variant="rectangular"
+                  width="100%"
+                  height={46}
+                  animation="wave"
                 />
-              </Grid>
-              <Grid item xs={12}>
+              ) : (
+                <Grid item xs={12}>
+                  <TextField
+                    label="입사일"
+                    type="date"
+                    value={joinDate}
+                    onChange={(e) => setJoinDate(e.target.value)}
+                    fullWidth
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    margin="normal"
+                  />
+                </Grid>
+              )}
+
+              <Grid item xs={12} mt={1}>
                 <Button
                   variant="contained"
                   color="primary"
