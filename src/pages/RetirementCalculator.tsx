@@ -19,6 +19,7 @@ import {
 } from 'date-fns';
 import { loadRetirementInfo } from '../services/RetirementService';
 import { convertToKoreanCurrency } from '../helpers/common';
+import { LoadRetirementInfoResponse } from '../types/Retirement';
 
 const RetirementCalculator: FC = () => {
   const { user } = useAuth();
@@ -42,7 +43,8 @@ const RetirementCalculator: FC = () => {
   useEffect(() => {
     const loadData = async () => {
       if (user) {
-        const retirementData = await loadRetirementInfo(user.uid);
+        const retirementData: LoadRetirementInfoResponse =
+          await loadRetirementInfo(user.uid);
         if (retirementData) {
           setStartDate(retirementData.startDate || '');
           setEndDate(retirementData.endDate || '');

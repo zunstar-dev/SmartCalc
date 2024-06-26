@@ -1,4 +1,3 @@
-// src/pages/ServiceTerms.tsx
 import { FC } from 'react';
 import { Box, Typography } from '@mui/material';
 
@@ -13,9 +12,9 @@ const ServiceTerms: FC = () => {
         제1조 (목적)
       </Typography>
       <Typography variant="body1" gutterBottom>
-        본 약관은 연봉 계산기 및 연차 계산기 등 다양한 계산기 서비스(이하
-        "개키우는개발자")의 이용 조건 및 절차에 관한 사항을 규정함을 목적으로
-        합니다.
+        본 약관은 연봉 계산기, 연차 계산기 및 퇴직금 계산기 등 다양한 계산기
+        서비스(이하 "개키우는개발자")의 이용 조건 및 절차에 관한 사항을 규정함을
+        목적으로 합니다.
       </Typography>
 
       <Typography variant="h6" gutterBottom>
@@ -23,7 +22,8 @@ const ServiceTerms: FC = () => {
       </Typography>
       <Typography variant="body1" gutterBottom>
         1. "서비스"란 이용자가 PC, 모바일 등 각종 디지털 기기를 통해 이용할 수
-        있는 연봉 계산기, 연차 계산기 및 기타 관련 서비스를 의미합니다.
+        있는 연봉 계산기, 연차 계산기, 퇴직금 계산기 및 기타 관련 서비스를
+        의미합니다.
         <br />
         2. "이용자"란 본 약관에 따라 서비스를 이용하는 자를 의미합니다.
       </Typography>
@@ -65,11 +65,12 @@ const ServiceTerms: FC = () => {
       </Typography>
       <Typography variant="body1" gutterBottom>
         1. 본 서비스는 일반적인 계산을 기반으로 제공되며, 실제 연봉 지급 조건,
-        연차 발생 조건 및 기타 상황에 따라 오차가 발생할 수 있습니다.
+        연차 발생 조건, 퇴직금 발생 조건 및 기타 상황에 따라 오차가 발생할 수
+        있습니다.
         <br />
         2. 본 서비스의 계산 결과는 참고용이며, 법적 효력을 가지지 않습니다. 실제
-        수령액, 연차 계산 등을 위해서는 반드시 국세청 간이세액표 등 공식 자료를
-        참고하시기 바랍니다.
+        수령액, 연차 계산, 퇴직금 계산 등을 위해서는 반드시 국세청 간이세액표 등
+        공식 자료를 참고하시기 바랍니다.
       </Typography>
 
       <Typography variant="h6" gutterBottom>
@@ -100,8 +101,8 @@ const ServiceTerms: FC = () => {
         1. 본 서비스는 게스트 모드로 운영되며, 브라우저 세션이 종료되면 일부
         데이터는 삭제될 수 있습니다.
         <br />
-        2. 서비스 이용 중 입력되는 연봉, 연차 및 기타 계산 관련 데이터는 서버에
-        저장되며, 이용자가 이를 관리할 수 있습니다.
+        2. 서비스 이용 중 입력되는 연봉, 연차, 퇴직금 및 기타 계산 관련 데이터는
+        서버에 저장되며, 이용자가 이를 관리할 수 있습니다.
       </Typography>
 
       <Typography variant="body1">
