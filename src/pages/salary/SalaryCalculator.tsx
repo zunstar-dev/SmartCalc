@@ -253,7 +253,7 @@ const SalaryCalculator: FC = () => {
               </CardContent>
             </Card>
             <Card sx={{ maxWidth: 600, margin: 'auto' }}>
-              <CardContent>
+              <CardContent sx={{ padding: '16px !important' }}>
                 {takeHomeSalary !== null && breakdown && (
                   <Grid container spacing={2}>
                     <Grid item xs={6}>

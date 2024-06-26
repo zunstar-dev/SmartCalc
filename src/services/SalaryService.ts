@@ -1,10 +1,6 @@
 import { doc, getDoc, setDoc } from 'firebase/firestore';
 import { db } from '../firebase/Firebase';
-import {
-  SalaryInfoRequest,
-  SalaryInfoResponse,
-  SaveSalariesRequest,
-} from '../types/salary';
+import { SalaryInfoRequest, SalaryInfoResponse } from '../types/salary';
 
 export const saveSalaryInfo = async (
   userId: string,

@@ -10,8 +10,14 @@ import {
   Button,
 } from '@mui/material';
 import { useAuth } from '../context/AuthContext';
-import { format, subMonths, differenceInCalendarDays } from 'date-fns';
+import {
+  subMonths,
+  differenceInCalendarDays,
+  endOfMonth,
+  startOfMonth,
+} from 'date-fns';
 import { loadRetirementInfo } from '../services/RetirementService';
+import { convertToKoreanCurrency } from '../helpers/common';
 
 const RetirementCalculator: FC = () => {
   const { user } = useAuth();
@@ -27,19 +33,22 @@ const RetirementCalculator: FC = () => {
     useState<string>('0');
   const [expectedRetirementPay, setExpectedRetirementPay] = useState<number>(0);
   const [averageDailyWage, setAverageDailyWage] = useState<number>(0);
+  const [totalEmploymentDays, setTotalEmploymentDays] = useState<number>(0);
+  const [threeMonthEmploymentDays, setThreeMonthEmploymentDays] =
+    useState<number>(0);
 
   useEffect(() => {
     const loadData = async () => {
       if (user) {
         const retirementData = await loadRetirementInfo(user.uid);
-        console.log(retirementData);
         if (retirementData) {
           setStartDate(retirementData.startDate || '');
           setEndDate(retirementData.endDate || '');
-          const days = differenceInCalendarDays(
+          const employmentDays = differenceInCalendarDays(
             new Date(retirementData.endDate),
             new Date(retirementData.startDate)
           );
+          setTotalEmploymentDays(employmentDays);
           setMonthlySalary(retirementData.monthlySalary?.toString() || '0');
           setConvertedMonthlySalary(
             convertToKoreanCurrency(
@@ -66,13 +75,11 @@ const RetirementCalculator: FC = () => {
             retirementData.monthlySalary || 0,
             retirementData.annualBonus || 0,
             retirementData.annualLeaveAllowance || 0,
-            days
+            employmentDays,
+            new Date(retirementData.endDate)
           );
 
-          calculateLastThreeMonths(
-            new Date(retirementData.endDate),
-            retirementData.monthlySalary || 0
-          );
+          calculateLastThreeMonths(new Date(retirementData.endDate));
         }
       }
     };
@@ -84,69 +91,38 @@ const RetirementCalculator: FC = () => {
     baseSalary: number,
     bonus: number,
     annualLeavePay: number,
-    days: number
+    employmentDays: number,
+    endDate: Date
   ) => {
-    const last3MonthsSalary = [
-      { days: 15, base: baseSalary / 2 },
-      { days: 31, base: baseSalary },
-      { days: 31, base: baseSalary },
-      { days: 15, base: baseSalary / 2 },
-    ];
+    const threeMonthEmploymentDays = calculateLastThreeMonths(endDate);
 
-    const totalDays = last3MonthsSalary.reduce(
-      (sum, period) => sum + period.days,
-      0
-    );
-    const totalBase = last3MonthsSalary.reduce(
-      (sum, period) => sum + period.base,
-      0
-    );
+    const A = baseSalary * 3;
+    const B = bonus * (3 / 12);
+    const C = annualLeavePay * (3 / 12);
 
-    const A = totalBase;
-    const B = (bonus * 3) / 12;
-    const C = (annualLeavePay * 5 * 3) / 12;
+    // 1일 평균임금 = 퇴직일 이전 3개월간에 지급받은 임금 총액 (A+B+C)/퇴직일 이전 3개월간의 총 일수
+    const averageDailyWage = (A + B + C) / threeMonthEmploymentDays;
 
-    const averageDailyWage = Math.floor((A + B + C) / totalDays);
-
-    const retirementPay = Math.floor(averageDailyWage * 30 * (days / 365));
+    // 1일 평균임금 × 30(일) × (재직일수/365)
+    const retirementPay = averageDailyWage * 30 * (employmentDays / 365);
 
     setExpectedRetirementPay(retirementPay);
     setAverageDailyWage(averageDailyWage);
+    setThreeMonthEmploymentDays(threeMonthEmploymentDays);
   };
 
-  const calculateLastThreeMonths = (endDate: Date, baseSalary: number) => {
-    const periods = [];
-    let currentEndDate = endDate;
+  const calculateLastThreeMonths = (endDate: Date) => {
+    let totalDays = 0;
 
-    for (let i = 0; i < 3; i++) {
-      const monthEnd = currentEndDate;
-      const monthStart = subMonths(currentEndDate, 1);
-      differenceInCalendarDays(monthEnd, monthStart) + 1;
+    for (let i = 2; i >= 0; i--) {
+      const monthEnd = endOfMonth(subMonths(endDate, i));
+      const monthStart = startOfMonth(subMonths(endDate, i));
+      const daysInMonth = differenceInCalendarDays(monthEnd, monthStart) + 1;
 
-      periods.unshift({
-        period: `${format(monthStart, 'yyyy-MM-dd')} ~ ${format(monthEnd, 'yyyy-MM-dd')}`,
-        salary: baseSalary,
-      });
-
-      currentEndDate = subMonths(currentEndDate, 1);
+      totalDays += daysInMonth;
     }
-  };
 
-  const convertToKoreanCurrency = (num: string) => {
-    if (!num) return '';
-    const units = ['', '만', '억', '조', '경'];
-    const numArr = num.split('').reverse();
-    let result = '';
-    for (let i = 0; i < numArr.length; i += 4) {
-      const part = numArr
-        .slice(i, i + 4)
-        .reverse()
-        .join('');
-      if (part !== '0000') {
-        result = `${parseInt(part, 10).toLocaleString()}${units[Math.floor(i / 4)]} ${result}`;
-      }
-    }
-    return result.trim();
+    return totalDays;
   };
 
   const handleMonthlySalaryChange = (
@@ -195,9 +171,17 @@ const RetirementCalculator: FC = () => {
       new Date(startDate)
     );
 
-    calculateRetirementPay(baseSalary, bonus, annualLeavePay, days);
+    setTotalEmploymentDays(days);
 
-    calculateLastThreeMonths(new Date(endDate), baseSalary);
+    calculateRetirementPay(
+      baseSalary,
+      bonus,
+      annualLeavePay,
+      days,
+      new Date(endDate)
+    );
+
+    calculateLastThreeMonths(new Date(endDate));
   };
 
   return (
@@ -211,15 +195,51 @@ const RetirementCalculator: FC = () => {
       }}
     >
       <Card>
-        <CardContent>
-          <Divider sx={{ my: 2 }} />
-          <Box mt={2}>
-            <Typography variant="h6">
-              예상 퇴직금: {expectedRetirementPay.toLocaleString('ko-KR')} 원
-            </Typography>
-            <Typography variant="h6">
-              1일 평균 임금: {averageDailyWage.toLocaleString('ko-KR')} 원
-            </Typography>
+        <CardContent sx={{ padding: '16px !important' }}>
+          <Box>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography variant="body2">예상 퇴직금</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" align="right">
+                  {expectedRetirementPay.toLocaleString('ko-KR')} 원
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography variant="body2">1일 평균 임금</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" align="right">
+                  {averageDailyWage.toLocaleString('ko-KR')} 원
+                </Typography>
+              </Grid>
+            </Grid>
+
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                <Typography variant="body2">총 재직일수</Typography>
+              </Grid>
+              <Grid item xs={6}>
+                <Typography variant="body2" align="right">
+                  {totalEmploymentDays} 일
+                </Typography>
+              </Grid>
+            </Grid>
+            <Grid container spacing={2}>
+              <Grid item xs={8}>
+                <Typography variant="body2">
+                  퇴직일 이전 3개월간의 총 일수
+                </Typography>
+              </Grid>
+              <Grid item xs={4}>
+                <Typography variant="body2" align="right">
+                  {threeMonthEmploymentDays} 일
+                </Typography>
+              </Grid>
+            </Grid>
           </Box>
         </CardContent>
       </Card>

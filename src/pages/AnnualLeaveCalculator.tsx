@@ -267,7 +267,7 @@ const AnnualLeaveCalculator: FC = () => {
         }}
       >
         <Card>
-          <CardContent>
+          <CardContent sx={{ padding: '16px !important' }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12}>
                 {loading ? (

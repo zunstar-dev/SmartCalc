@@ -1,4 +1,4 @@
-import React, { useState, useEffect, FC } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import {
   Box,
   Card,
@@ -20,57 +20,27 @@ import {
 import { loadCompanyInfo } from '../services/CompanyInfoService';
 import { loadSalaries } from '../services/SalaryService';
 import { format, addYears, subDays } from 'date-fns';
-import { RetirementInfoRequest } from '../types/Retirement';
-
-interface RetirementInfo {
-  startDate: string;
-  endDate: string;
-  employmentDays: number;
-  monthlySalary: string;
-  convertedMonthlySalary: string;
-  annualBonus: string;
-  convertedAnnualBonus: string;
-  annualLeaveAllowance: string;
-  convertedAnnualLeaveAllowance: string;
-  averageDailyWage: number;
-  normalDailyWage: number;
-  retirementPay: number;
-  retirementOption: boolean;
-}
+import { RetirementInfoData, RetirementInfoRequest } from '../types/Retirement';
 
 const RetirementInfo: FC = () => {
   const { user } = useAuth();
-  const [retirementInfo, setRetirementInfo] = useState<RetirementInfo>({
-    startDate: '',
-    endDate: '',
-    employmentDays: 0,
-    monthlySalary: '',
-    convertedMonthlySalary: '',
-    annualBonus: '',
-    convertedAnnualBonus: '',
-    annualLeaveAllowance: '',
-    convertedAnnualLeaveAllowance: '',
-    averageDailyWage: 0,
-    normalDailyWage: 0,
-    retirementPay: 0,
-    retirementOption: true,
-  });
   const [loading, setLoading] = useState<boolean>(true);
-  const [startDate, setStartDate] = useState<string>('');
-  const [endDate, setEndDate] = useState<string>('');
-  const [employmentDays, setEmploymentDays] = useState<number>(0);
-  const [monthlySalary, setMonthlySalary] = useState<string>('0');
-  const [convertedMonthlySalary, setConvertedMonthlySalary] =
-    useState<string>('0');
-  const [annualBonus, setAnnualBonus] = useState<string>('0');
-  const [convertedAnnualBonus, setConvertedAnnualBonus] = useState<string>('0');
-  const [annualLeaveAllowance, setAnnualLeaveAllowance] = useState<string>('0');
-  const [convertedAnnualLeaveAllowance, setConvertedAnnualLeaveAllowance] =
-    useState<string>('0');
-  const [averageDailyWage, setAverageDailyWage] = useState<number>(0);
-  const [normalDailyWage, setNormalDailyWage] = useState<number>(0);
-  const [retirementPay, setRetirementPay] = useState<number>(0);
-  const [retirementOption, setRetirementOption] = useState<boolean>(true); // true: 별도, false: 포함
+  const [retirementInfoData, setRetirementInfoData] =
+    useState<RetirementInfoData>({
+      startDate: '',
+      endDate: '',
+      employmentDays: 0,
+      monthlySalary: '0',
+      convertedMonthlySalary: '0',
+      annualBonus: '0',
+      convertedAnnualBonus: '0',
+      annualLeaveAllowance: '0',
+      convertedAnnualLeaveAllowance: '0',
+      averageDailyWage: 0,
+      normalDailyWage: 0,
+      retirementPay: 0,
+      retirementOption: true,
+    });
 
   const resetFields = async () => {
     if (user) {
@@ -90,12 +60,12 @@ const RetirementInfo: FC = () => {
       const salaries = await loadSalaries(user.uid);
       if (salaries.length > 0) {
         const recentSalary = salaries[0];
-        calculatedMonthlySalary = retirementOption
+        calculatedMonthlySalary = retirementInfoData.retirementOption
           ? recentSalary / 12
           : recentSalary / 13;
       }
 
-      setRetirementInfo({
+      setRetirementInfoData({
         startDate: start,
         endDate: format(oneYearLater, 'yyyy-MM-dd'),
         employmentDays: 0,
@@ -112,6 +82,7 @@ const RetirementInfo: FC = () => {
         retirementPay: 0,
         retirementOption: true,
       });
+      setLoading(false);
     }
   };
 
@@ -127,7 +98,10 @@ const RetirementInfo: FC = () => {
         if (retirementData) {
           start = retirementData.startDate || start;
           end = retirementData.endDate || end;
-          setRetirementOption(retirementData.retirementOption ?? true);
+          setRetirementInfoData((prevInfo) => ({
+            ...prevInfo,
+            retirementOption: retirementData.retirementOption ?? true,
+          }));
         }
 
         // 2순위: 회사 정보에서 입사일 가져오기
@@ -152,128 +126,82 @@ const RetirementInfo: FC = () => {
         const salaries = await loadSalaries(user.uid);
         if (salaries.length > 0) {
           const recentSalary = salaries[0];
-          calculatedMonthlySalary = retirementOption
+          calculatedMonthlySalary = retirementInfoData.retirementOption
             ? recentSalary / 12
             : recentSalary / 13;
         }
 
-        setStartDate(start);
-        setEndDate(end);
-        setEmploymentDays(retirementData?.employmentDays || 0);
-        setMonthlySalary(
-          retirementData?.monthlySalary?.toString() ||
-            calculatedMonthlySalary.toString()
-        );
-        setConvertedMonthlySalary(
-          convertToKoreanCurrency(
+        setRetirementInfoData((prevInfo) => ({
+          ...prevInfo,
+          startDate: start,
+          endDate: end,
+          employmentDays: retirementData?.employmentDays || 0,
+          monthlySalary:
+            retirementData?.monthlySalary?.toString() ||
+            calculatedMonthlySalary.toString(),
+          convertedMonthlySalary: convertToKoreanCurrency(
             retirementData?.monthlySalary?.toString() ||
               calculatedMonthlySalary.toString()
-          )
-        );
-        setAnnualBonus(retirementData?.annualBonus?.toString() || '0');
-        setConvertedAnnualBonus(
-          convertToKoreanCurrency(
+          ),
+          annualBonus: retirementData?.annualBonus?.toString() || '0',
+          convertedAnnualBonus: convertToKoreanCurrency(
             retirementData?.annualBonus?.toString() || '0'
-          )
-        );
-        setAnnualLeaveAllowance(
-          retirementData?.annualLeaveAllowance?.toString() || '0'
-        );
-        setConvertedAnnualLeaveAllowance(
-          convertToKoreanCurrency(
+          ),
+          annualLeaveAllowance:
+            retirementData?.annualLeaveAllowance?.toString() || '0',
+          convertedAnnualLeaveAllowance: convertToKoreanCurrency(
             retirementData?.annualLeaveAllowance?.toString() || '0'
-          )
-        );
-        setAverageDailyWage(retirementData?.averageDailyWage || 0);
-        setNormalDailyWage(retirementData?.normalDailyWage || 0);
-        setRetirementPay(retirementData?.retirementPay || 0);
+          ),
+          averageDailyWage: retirementData?.averageDailyWage || 0,
+          normalDailyWage: retirementData?.normalDailyWage || 0,
+          retirementPay: retirementData?.retirementPay || 0,
+        }));
         setLoading(false);
       }
     };
 
     loadData();
-  }, [user, retirementOption]);
+  }, [user, retirementInfoData.retirementOption]);
 
   const handleSave = async () => {
     if (user) {
-      const retirementInfo: RetirementInfoRequest = {
-        startDate,
-        endDate,
-        employmentDays,
-        monthlySalary: Number(monthlySalary),
-        annualBonus: Number(annualBonus),
-        annualLeaveAllowance: Number(annualLeaveAllowance),
-        averageDailyWage,
-        normalDailyWage,
-        retirementPay,
-        retirementOption,
+      const retirementInfoRequest: RetirementInfoRequest = {
+        startDate: retirementInfoData.startDate,
+        endDate: retirementInfoData.endDate,
+        employmentDays: retirementInfoData.employmentDays,
+        monthlySalary: Number(retirementInfoData.monthlySalary),
+        annualBonus: Number(retirementInfoData.annualBonus),
+        annualLeaveAllowance: Number(retirementInfoData.annualLeaveAllowance),
+        averageDailyWage: retirementInfoData.averageDailyWage,
+        normalDailyWage: retirementInfoData.normalDailyWage,
+        retirementPay: retirementInfoData.retirementPay,
+        retirementOption: retirementInfoData.retirementOption,
       };
-      await saveRetirementInfo(user.uid, retirementInfo);
+      await saveRetirementInfo(user.uid, retirementInfoRequest);
     }
   };
 
-  const handleMonthlySalaryChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const numberValue = value.replace(/\D/g, '');
+
+    setRetirementInfoData((prevInfo) => ({
+      ...prevInfo,
+      [name]: numberValue,
+      [`converted${name.charAt(0).toUpperCase() + name.slice(1)}`]:
+        convertToKoreanCurrency(numberValue),
+    }));
+  };
+
+  const handleInputBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
     if (value === '') {
-      setMonthlySalary(''); // 빈 문자열을 허용
-      setConvertedMonthlySalary('');
-    } else {
-      const numberValue = Number(value.replace(/\D/g, '')); // 숫자가 아닌 문자는 제거
-      setMonthlySalary(numberValue.toString());
-      setConvertedMonthlySalary(
-        convertToKoreanCurrency(numberValue.toString())
-      );
-    }
-  };
-
-  const handleAnnualBonusChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    if (value === '') {
-      setAnnualBonus(''); // 빈 문자열을 허용
-      setConvertedAnnualBonus('');
-    } else {
-      const numberValue = Number(value.replace(/\D/g, '')); // 숫자가 아닌 문자는 제거
-      setAnnualBonus(numberValue.toString());
-      setConvertedAnnualBonus(convertToKoreanCurrency(numberValue.toString()));
-    }
-  };
-
-  const handleAnnualLeaveAllowanceChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const value = e.target.value;
-    if (value === '') {
-      setAnnualLeaveAllowance(''); // 빈 문자열을 허용
-      setConvertedAnnualLeaveAllowance('');
-    } else {
-      const numberValue = Number(value.replace(/\D/g, '')); // 숫자가 아닌 문자는 제거
-      setAnnualLeaveAllowance(numberValue.toString());
-      setConvertedAnnualLeaveAllowance(
-        convertToKoreanCurrency(numberValue.toString())
-      );
-    }
-  };
-
-  const handleMonthlySalaryBlur = () => {
-    if (monthlySalary === '') {
-      setMonthlySalary('0'); // 입력 필드가 포커스를 잃을 때 기본값 설정
-      setConvertedMonthlySalary('0');
-    }
-  };
-
-  const handleAnnualBonusBlur = () => {
-    if (annualBonus === '') {
-      setAnnualBonus('0'); // 입력 필드가 포커스를 잃을 때 기본값 설정
-      setConvertedAnnualBonus('0');
-    }
-  };
-
-  const handleAnnualLeaveAllowanceBlur = () => {
-    if (annualLeaveAllowance === '') {
-      setAnnualLeaveAllowance('0'); // 입력 필드가 포커스를 잃을 때 기본값 설정
-      setConvertedAnnualLeaveAllowance('0');
+      setRetirementInfoData((prevInfo) => ({
+        ...prevInfo,
+        [name]: '0',
+        [`converted${name.charAt(0).toUpperCase() + name.slice(1)}`]: '0',
+      }));
     }
   };
 
@@ -312,7 +240,7 @@ const RetirementInfo: FC = () => {
         }}
       >
         <Card>
-          <CardContent>
+          <CardContent sx={{ padding: '16px !important' }}>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={12} sm={6}>
                 {loading ? (
@@ -321,8 +249,14 @@ const RetirementInfo: FC = () => {
                   <TextField
                     label="입사일자"
                     type="date"
-                    value={startDate}
-                    onChange={(e) => setStartDate(e.target.value)}
+                    name="startDate"
+                    value={retirementInfoData.startDate}
+                    onChange={(e) =>
+                      setRetirementInfoData((prevInfo) => ({
+                        ...prevInfo,
+                        startDate: e.target.value,
+                      }))
+                    }
                     fullWidth
                     InputLabelProps={{
                       shrink: true,
@@ -338,8 +272,14 @@ const RetirementInfo: FC = () => {
                   <TextField
                     label="퇴직일자"
                     type="date"
-                    value={endDate}
-                    onChange={(e) => setEndDate(e.target.value)}
+                    name="endDate"
+                    value={retirementInfoData.endDate}
+                    onChange={(e) =>
+                      setRetirementInfoData((prevInfo) => ({
+                        ...prevInfo,
+                        endDate: e.target.value,
+                      }))
+                    }
                     fullWidth
                     InputLabelProps={{
                       shrink: true,
@@ -359,13 +299,16 @@ const RetirementInfo: FC = () => {
                     <TextField
                       label="월급 (세전)"
                       type="text"
+                      name="monthlySalary"
                       value={
-                        monthlySalary
-                          ? Number(monthlySalary).toLocaleString('ko-KR')
+                        retirementInfoData.monthlySalary
+                          ? Number(
+                              retirementInfoData.monthlySalary
+                            ).toLocaleString('ko-KR')
                           : ''
                       }
-                      onChange={handleMonthlySalaryChange}
-                      onBlur={handleMonthlySalaryBlur}
+                      onChange={handleInputChange}
+                      onBlur={handleInputBlur}
                       fullWidth
                       margin="normal"
                       inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
@@ -375,7 +318,7 @@ const RetirementInfo: FC = () => {
                       sx={{ padding: 1, width: '100%' }}
                       align="right"
                     >
-                      {convertedMonthlySalary} 원
+                      {retirementInfoData.convertedMonthlySalary} 원
                     </Typography>
                   </Box>
                 )}
@@ -388,13 +331,16 @@ const RetirementInfo: FC = () => {
                     <TextField
                       label="연간 상여금"
                       type="text"
+                      name="annualBonus"
                       value={
-                        annualBonus
-                          ? Number(annualBonus).toLocaleString('ko-KR')
+                        retirementInfoData.annualBonus
+                          ? Number(
+                              retirementInfoData.annualBonus
+                            ).toLocaleString('ko-KR')
                           : ''
                       }
-                      onChange={handleAnnualBonusChange}
-                      onBlur={handleAnnualBonusBlur}
+                      onChange={handleInputChange}
+                      onBlur={handleInputBlur}
                       fullWidth
                       margin="normal"
                       inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
@@ -404,7 +350,7 @@ const RetirementInfo: FC = () => {
                       sx={{ padding: 1, width: '100%' }}
                       align="right"
                     >
-                      {convertedAnnualBonus} 원
+                      {retirementInfoData.convertedAnnualBonus} 원
                     </Typography>
                   </Box>
                 )}
@@ -417,13 +363,16 @@ const RetirementInfo: FC = () => {
                     <TextField
                       label="연차수당"
                       type="text"
+                      name="annualLeaveAllowance"
                       value={
-                        annualLeaveAllowance
-                          ? Number(annualLeaveAllowance).toLocaleString('ko-KR')
+                        retirementInfoData.annualLeaveAllowance
+                          ? Number(
+                              retirementInfoData.annualLeaveAllowance
+                            ).toLocaleString('ko-KR')
                           : ''
                       }
-                      onChange={handleAnnualLeaveAllowanceChange}
-                      onBlur={handleAnnualLeaveAllowanceBlur}
+                      onChange={handleInputChange}
+                      onBlur={handleInputBlur}
                       fullWidth
                       margin="normal"
                       inputProps={{ inputMode: 'numeric', pattern: '[0-9]*' }}
@@ -433,7 +382,7 @@ const RetirementInfo: FC = () => {
                       sx={{ padding: 1, width: '100%' }}
                       align="right"
                     >
-                      {convertedAnnualLeaveAllowance} 원
+                      {retirementInfoData.convertedAnnualLeaveAllowance} 원
                     </Typography>
                   </Box>
                 )}
